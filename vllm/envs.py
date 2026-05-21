@@ -1411,6 +1411,17 @@ environment_variables: dict[str, Callable[[], Any]] = {
     "VLLM_MOE_ROUTING_SIMULATION_STRATEGY": lambda: os.environ.get(
         "VLLM_MOE_ROUTING_SIMULATION_STRATEGY", ""
     ).lower(),
+    # Enable per-rank, per-layer, per-step JSONL profiling of the MoE
+    # all-to-all boundary. See vllm/distributed/moe_a2a_profiler.py for
+    # the scope constraints (DP=EP=2, naive AG/RS backend, enforce_eager).
+    "VLLM_MOE_A2A_PROFILE": lambda: bool(
+        int(os.getenv("VLLM_MOE_A2A_PROFILE", "0"))
+    ),
+    # Output path template for VLLM_MOE_A2A_PROFILE. The literal substring
+    # "{rank}" is replaced with the EP rank, yielding one file per rank.
+    "VLLM_MOE_A2A_PROFILE_PATH": lambda: os.getenv(
+        "VLLM_MOE_A2A_PROFILE_PATH", "/tmp/moe_a2a_rank{rank}.jsonl"
+    ),
     # Regex timeout for use by the vLLM tool parsing plugins.
     "VLLM_TOOL_PARSE_REGEX_TIMEOUT_SECONDS": lambda: int(
         os.getenv("VLLM_TOOL_PARSE_REGEX_TIMEOUT_SECONDS", "1")

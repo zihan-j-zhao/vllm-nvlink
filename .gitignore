@@ -245,3 +245,16 @@ vllm/grpc/vllm_engine_pb2.pyi
 
 # Ignore generated cpu headers 
 csrc/cpu/cpu_attn_dispatch_generated.h
+
+# Track everything under playground/ regardless of file-type rules above
+# (so that *.csv / *.log / etc. inside experiments are preserved). Keep
+# this as the LAST entry so it overrides any earlier ignore pattern.
+!playground/**
+
+# aiperf artifacts are large (>100 MB per run, dominated by inputs.json);
+# track only the derived CSVs/plots that downstream analysis consumes.
+# Must come AFTER the !playground/** re-include above to take effect.
+playground/out/aiperf/
+
+# ... except aiperf raw output, which is too large to track in-repo.
+playground/out/aiperf/

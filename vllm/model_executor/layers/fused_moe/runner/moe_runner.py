@@ -700,6 +700,26 @@ class MoERunner(MoERunnerInterface):
         # TODO(bnell): this can be removed after MK migration is complete.
         layer.ensure_moe_quant_config_init()
 
+        # Publish current MoE layer name to the all-to-all profiler so the
+        # EP communicator choke point can tag dispatch/combine records with
+        # it. No-op unless VLLM_MOE_A2A_PROFILE is set. Scope enforcement is
+        # done lazily here (once) using self.moe_config, because the global
+        # vllm_config is not always published in the worker forward context.
+        from vllm.distributed.moe_a2a_profiler import get_profiler as _get_a2a_profiler
+
+        _a2a_prof = _get_a2a_profiler()
+        if _a2a_prof._enabled and not _a2a_prof._scope_checked:
+            _a2a_prof.enforce_scope(
+                all2all_backend=(
+                    self.moe_config.moe_parallel_config.all2all_backend or ""
+                ),
+                data_parallel_size=self.moe_config.dp_size,
+                enable_expert_parallel=self.moe_config.moe_parallel_config.use_ep,
+                pcp_size=self.moe_config.pcp_size,
+            )
+        if _a2a_prof.is_enabled():
+            _a2a_prof.set_layer(getattr(layer, "layer_name", None))
+
         # Sync aux and main stream for shared expert multi-stream overlap.
         self._maybe_sync_shared_experts_stream(shared_experts_input)
 

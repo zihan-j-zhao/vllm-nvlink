@@ -13,6 +13,7 @@ from vllm.distributed.device_communicators.pynccl import register_nccl_symmetric
 from vllm.distributed.device_communicators.pynccl_allocator import (
     is_symmetric_memory_enabled,
 )
+from vllm.distributed.moe_a2a_profiler import get_profiler as _get_a2a_profiler
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
 
@@ -407,12 +408,30 @@ class CudaCommunicator(DeviceCommunicatorBase):
         """
 
         assert self.all2all_manager is not None
-        return self.all2all_manager.dispatch_router_logits(
+        result = self.all2all_manager.dispatch_router_logits(
             hidden_states,
             router_logits,
             is_sequence_parallel,
             extra_tensors,
         )
+        _prof = _get_a2a_profiler()
+        if _prof.is_enabled():
+            in_tensors: list = [hidden_states, router_logits]
+            if extra_tensors is not None:
+                in_tensors.extend(extra_tensors)
+            # result is (gathered_h, gathered_r) or (gathered_h, gathered_r, [extras])
+            if len(result) == 3:
+                out_tensors: list = [result[0], result[1], *result[2]]
+            else:
+                out_tensors = [result[0], result[1]]
+            _prof.record(
+                kind="dispatch",
+                rank=self.all2all_manager.rank,
+                world_size=self.all2all_manager.world_size,
+                in_tensors=in_tensors,
+                out_tensors=out_tensors,
+            )
+        return result
 
     def dispatch(
         self,
@@ -430,13 +449,30 @@ class CudaCommunicator(DeviceCommunicatorBase):
         This is a no-op in the base class.
         """
         assert self.all2all_manager is not None
-        return self.all2all_manager.dispatch(
+        result = self.all2all_manager.dispatch(
             hidden_states,
             topk_weights,
             topk_ids,
             is_sequence_parallel,
             extra_tensors=extra_tensors,
         )
+        _prof = _get_a2a_profiler()
+        if _prof.is_enabled():
+            in_tensors: list = [hidden_states, topk_weights, topk_ids]
+            if extra_tensors is not None:
+                in_tensors.extend(extra_tensors)
+            if len(result) == 4:
+                out_tensors: list = [result[0], result[1], result[2], *result[3]]
+            else:
+                out_tensors = [result[0], result[1], result[2]]
+            _prof.record(
+                kind="dispatch",
+                rank=self.all2all_manager.rank,
+                world_size=self.all2all_manager.world_size,
+                in_tensors=in_tensors,
+                out_tensors=out_tensors,
+            )
+        return result
 
     def combine(
         self, hidden_states: torch.Tensor, is_sequence_parallel: bool = False
@@ -446,10 +482,20 @@ class CudaCommunicator(DeviceCommunicatorBase):
         This is a no-op in the base class.
         """
         assert self.all2all_manager is not None
-        return self.all2all_manager.combine(
+        result = self.all2all_manager.combine(
             hidden_states,
             is_sequence_parallel,
         )
+        _prof = _get_a2a_profiler()
+        if _prof.is_enabled():
+            _prof.record(
+                kind="combine",
+                rank=self.all2all_manager.rank,
+                world_size=self.all2all_manager.world_size,
+                in_tensors=[hidden_states],
+                out_tensors=[result],
+            )
+        return result
 
     def batch_isend_irecv(self, p2p_ops: list):
         pynccl_comm = self.pynccl_comm

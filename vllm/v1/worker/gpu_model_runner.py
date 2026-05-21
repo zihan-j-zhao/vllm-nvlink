@@ -3825,6 +3825,21 @@ class GPUModelRunner(
             get_kv_transfer_group().handle_preemptions(kv_connector_metadata)
 
         num_scheduled_tokens = scheduler_output.total_num_scheduled_tokens
+
+        # Publish per-step state to the MoE all-to-all profiler. No-op
+        # unless VLLM_MOE_A2A_PROFILE is set. We gate on the raw `_enabled`
+        # flag (not `is_enabled()`) so step ids are well-defined from the
+        # very first execute_model, before the MoE runner's lazy scope
+        # check has had a chance to run.
+        from vllm.distributed.moe_a2a_profiler import (
+            get_profiler as _get_a2a_profiler,
+        )
+
+        _a2a_prof = _get_a2a_profiler()
+        if _a2a_prof._enabled:
+            self._a2a_step_id = getattr(self, "_a2a_step_id", -1) + 1
+            _a2a_prof.set_step(self._a2a_step_id, num_scheduled_tokens)
+
         with (
             record_function_or_nullcontext("gpu_model_runner: preprocess"),
             self.synchronize_input_prep(),

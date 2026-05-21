@@ -1,0 +1,361 @@
+[run_aiperf] url                = http://localhost:8000
+[run_aiperf] served-model-name  = Qwen3-30B-A3B-Instruct-2507
+[run_aiperf] tokenizer          = Qwen/Qwen3-30B-A3B-Instruct-2507
+[run_aiperf] request-rate       = 20 req/s (Poisson)
+[run_aiperf] request-count      = 1000
+[run_aiperf] random-seed        = 42
+[run_aiperf] artifact-dir       = playground/out/aiperf/2026-05-21T07-54-03Z
+2026-05-21 07:54:03,989 - aiperf.common.readiness_probe - INFO - Waiting for endpoint readiness (mode=models, timeout=600.0s, interval=5.0s) across 1 URL(s) x 1 model(s)
+2026-05-21 07:54:03,996 - aiperf.common.readiness_probe - INFO - Model 'Qwen3-30B-A3B-Instruct-2507' ready at http://localhost:8000 after 1 attempt(s)
+2026-05-21 07:54:04,030 - aiperf.cli_runner - INFO - Starting AIPerf System
+07:54:04.030 INFO     Starting AIPerf System (cli_runner.py:135)
+2026-05-21 07:54:04,044 - aiperf.cli_runner - INFO - ✓ Tokenizer Qwen/Qwen3-30B-A3B-Instruct-2507 detected
+07:54:04.044 INFO     ✓ Tokenizer Qwen/Qwen3-30B-A3B-Instruct-2507 detected (tokenizer_display.py:254)
+2026-05-21 07:54:04,053 - aiperf.cli_runner - INFO - 1 tokenizer validated • 0.0s
+07:54:04.053 INFO     1 tokenizer validated • 0.0s (tokenizer_display.py:263)
+07:54:04.241 INFO     Registered Worker Manager (id: 'worker_manager') (system_controller.py:376)
+07:54:04.251 INFO     Server Metrics: Discovered 1 endpoints: ['http://localhost:8000/metrics'] (manager.py:70)
+07:54:04.284 INFO     GPU telemetry export enabled: playground/out/aiperf/2026-05-21T07-54-03Z/gpu_telemetry_export.jsonl (jsonl_writer.py:53)
+07:54:04.301 INFO     Record metrics export enabled: playground/out/aiperf/2026-05-21T07-54-03Z/profile_export.jsonl (record_export_results_processor.py:53)
+07:54:04.352 INFO     Registered Worker (id: 'worker_f5956df8') (system_controller.py:376)
+07:54:04.358 INFO     Registered Worker (id: 'worker_73cfcd8c') (system_controller.py:376)
+07:54:04.363 INFO     Registered Worker (id: 'worker_0d36ad12') (system_controller.py:376)
+07:54:04.369 INFO     Registered Dataset Manager (id: 'dataset_manager') (system_controller.py:376)
+07:54:04.373 INFO     Registered Worker (id: 'worker_948474c0') (system_controller.py:376)
+07:54:04.379 INFO     Registered Worker (id: 'worker_4d1cf1d4') (system_controller.py:376)
+07:54:04.384 INFO     Registered Worker (id: 'worker_284bd3da') (system_controller.py:376)
+07:54:04.389 INFO     Registered Worker (id: 'worker_00f929ac') (system_controller.py:376)
+07:54:04.394 INFO     Registered Worker (id: 'worker_4c81cb84') (system_controller.py:376)
+07:54:04.399 INFO     Registered Worker (id: 'worker_1f221745') (system_controller.py:376)
+07:54:04.404 INFO     Registered Worker (id: 'worker_5945f47e') (system_controller.py:376)
+07:54:04.410 INFO     Registered Record Processor (id: 'record_processor_0e1dac7f') (system_controller.py:376)
+07:54:04.415 INFO     Registered Record Processor (id: 'record_processor_633c9e84') (system_controller.py:376)
+07:54:04.419 INFO     Registered Record Processor (id: 'record_processor_e443f575') (system_controller.py:376)
+07:54:04.424 INFO     Registered Gpu Telemetry Manager (id: 'gpu_telemetry_manager') (system_controller.py:376)
+07:54:04.429 INFO     Registered Record Processor (id: 'record_processor_ee13619f') (system_controller.py:376)
+07:54:04.434 INFO     Registered Worker (id: 'worker_c5e1d7d0') (system_controller.py:376)
+07:54:04.438 INFO     Registered Record Processor (id: 'record_processor_926d57b6') (system_controller.py:376)
+07:54:04.443 INFO     Registered Server Metrics Manager (id: 'server_metrics_manager') (system_controller.py:376)
+07:54:04.448 INFO     Registered Record Processor (id: 'record_processor_88186a41') (system_controller.py:376)
+07:54:04.453 INFO     Registered Worker (id: 'worker_135d050b') (system_controller.py:376)
+07:54:04.458 INFO     Registered Worker (id: 'worker_7bb70483') (system_controller.py:376)
+07:54:04.463 INFO     Registered Worker (id: 'worker_8f008d68') (system_controller.py:376)
+07:54:04.467 INFO     Registered Record Processor (id: 'record_processor_f5d0784e') (system_controller.py:376)
+07:54:04.471 INFO     Registered Worker (id: 'worker_8342ef5c') (system_controller.py:376)
+07:54:04.475 INFO     Registered Worker (id: 'worker_3381f6b5') (system_controller.py:376)
+07:54:04.480 INFO     Registered Records Manager (id: 'records_manager') (system_controller.py:376)
+07:54:04.484 INFO     Registered Timing Manager (id: 'timing_manager') (system_controller.py:376)
+07:54:04.490 INFO     Registered Worker (id: 'worker_42cffe1f') (system_controller.py:376)
+07:54:04.494 INFO     Registered Worker (id: 'worker_42d0f9ba') (system_controller.py:376)
+07:54:04.499 INFO     Registered Worker (id: 'worker_b5cfdaec') (system_controller.py:376)
+07:54:04.507 INFO     Registered Worker (id: 'worker_cde926e4') (system_controller.py:376)
+07:54:04.517 INFO     Registered Worker (id: 'worker_7ea66bf4') (system_controller.py:376)
+07:54:04.523 INFO     Registered Worker (id: 'worker_80a8295c') (system_controller.py:376)
+07:54:04.527 INFO     Registered Worker (id: 'worker_4b693baf') (system_controller.py:376)
+07:54:04.532 INFO     Registered Record Processor (id: 'record_processor_775014d3') (system_controller.py:376)
+07:54:04.538 INFO     Registered Worker (id: 'worker_bab49807') (system_controller.py:376)
+07:54:04.543 INFO     Registered Worker (id: 'worker_273a3891') (system_controller.py:376)
+07:54:04.548 INFO     Registered Worker (id: 'worker_455f03b9') (system_controller.py:376)
+07:54:04.553 INFO     Registered Worker (id: 'worker_abe709fd') (system_controller.py:376)
+07:54:04.564 INFO     Registered Worker (id: 'worker_080bdcfc') (system_controller.py:376)
+07:54:04.569 INFO     Registered Worker (id: 'worker_0b73e910') (system_controller.py:376)
+07:54:04.574 INFO     Registered Worker (id: 'worker_1529ffc3') (system_controller.py:376)
+07:54:04.579 INFO     Registered Worker (id: 'worker_ff8a4e7f') (system_controller.py:376)
+07:54:04.583 INFO     Registered Worker (id: 'worker_065d0642') (system_controller.py:376)
+07:54:04.727 INFO     AIPerf System is CONFIGURING (system_controller.py:264)
+07:54:04.733 INFO     Configuring all services to start profiling (system_controller.py:277)
+07:54:04.740 INFO     Waiting for dataset to be configured before configuring timing (manager.py:96)
+07:54:04.740 INFO     Configuring tokenizer(s) for dataset manager (dataset_manager.py:130)
+07:54:04.740 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.740 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.740 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.740 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.740 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.741 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.741 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.741 INFO     Configuring tokenizers for inference result parser (resolve_alias: False) (inference_result_parser.py:77)
+07:54:04.744 INFO     GPU telemetry disabled - no DCGM endpoints reachable (system_controller.py:465)
+07:54:04.745 INFO     Server Metrics: Capturing baseline metrics... (manager.py:152)
+07:54:04.797 INFO     Skipping unsupported summary metric: http_request_size_bytes (data_collector.py:285)
+07:54:04.802 INFO     Skipping unsupported summary metric: http_response_size_bytes (data_collector.py:285)
+07:54:04.807 INFO     Server metrics enabled - 1/1 endpoint(s) reachable. (system_controller.py:491)
+07:54:08.361 INFO     Tokenizer(s) configured in 3.61 seconds (dataset_manager.py:134)
+07:54:08.366 INFO     Configuring dataset for dataset_manager (dataset_manager.py:140)
+07:54:08.432 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.67 seconds (inference_result_parser.py:100)
+07:54:08.439 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.69 seconds (inference_result_parser.py:100)
+07:54:08.440 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.69 seconds (inference_result_parser.py:100)
+07:54:08.483 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.72 seconds (inference_result_parser.py:100)
+07:54:08.506 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.74 seconds (inference_result_parser.py:100)
+07:54:08.511 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.76 seconds (inference_result_parser.py:100)
+07:54:08.541 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.78 seconds (inference_result_parser.py:100)
+07:54:08.585 INFO     Initialized tokenizers: {'Qwen3-30B-A3B-Instruct-2507': {'class': 'Qwen2Tokenizer', 'name_or_path': 'Qwen/Qwen3-30B-A3B-Instruct-2507'}} in 3.83 seconds (inference_result_parser.py:100)
+07:54:08.913 INFO     No local dataset cache found, downloading from https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/resolve/main/ShareGPT_V3_unfiltered_cleaned_split.json (base_public_dataset.py:108)
+07:54:42.663 INFO     Saving ShareGPT dataset to local cache .cache/aiperf/datasets/ShareGPT_V3_unfiltered_cleaned_split.json (base_public_dataset.py:127)
+07:54:45.328 INFO     Validating ShareGPT dataset and constructing conversation dataset (sharegpt.py:83)
+07:56:27.559 INFO     Memory-mapped backing store initialized (streaming to /tmp/aiperf_mmap_5a482845-ecc3-4660-bc92-1a332d63822f/dataset.dat) (memory_map_utils.py:136)
+07:56:31.015 INFO     Data file finalized: 82744 conversations, 111.73 MB (memory_map_utils.py:239)
+07:56:31.025 INFO     Index file created: /tmp/aiperf_mmap_5a482845-ecc3-4660-bc92-1a332d63822f/index.dat (memory_map_utils.py:246)
+07:56:31.031 INFO     Backing store finalized: client_type=DatasetClientStoreType.MEMORY_MAP data_file_path=PosixPath('/tmp/aiperf_mmap_5a482845-ecc3-4660-bc92-1a332d63822f/dataset.dat') index_file_path=PosixPath('/tmp/aiperf_mmap_5a482845-ecc3-4660-bc92-1a332d63822f/index.dat') conversation_count=82744 total_size_bytes=117157667 compressed_data_file_path=None compressed_index_file_path=None compressed_size_bytes=0 (dataset_manager.py:468)
+07:56:31.733 INFO     sampling strategy: shuffle, unique conversations: 82744, unique turn count: 82744 (dataset_manager.py:485)
+07:56:31.822 INFO     Generating inputs.json file at /data/zihan/projects/vllm-nvlink/playground/out/aiperf/2026-05-21T07-54-03Z/inputs.json (dataset_manager.py:327)
+07:56:32.055 INFO     Initialized 1 phase(s): ['Profiling'] (phase_orchestrator.py:154)
+07:56:33.697 INFO     inputs.json file generated in 1.87 seconds (dataset_manager.py:345)
+07:56:34.416 INFO     Dataset client initialized and freed 82744 conversations from memory (dataset_manager.py:176)
+07:56:34.421 INFO     Dataset configured in 146.05 seconds (dataset_manager.py:147)
+07:56:34.428 INFO     All services configured in 149.69 seconds (system_controller.py:289)
+07:56:34.434 INFO     AIPerf System is CONFIGURED (system_controller.py:266)
+07:56:34.441 INFO     Server Metrics: Started 1 collector(s) successfully (manager.py:216)
+07:56:34.445 INFO     Creating interval generator: pattern=poisson, rate=20.0, smoothness=None (request_rate.py:111)
+07:56:34.447 INFO     All services started profiling successfully (system_controller.py:311)
+07:56:34.450 NOTICE   Phase profiling started | target: 1,000 requests (runner.py:236)
+07:56:34.453 INFO     AIPerf System is PROFILING (system_controller.py:268)
+07:56:34.459 INFO     Credit phase start: profiling (records_manager.py:392)
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+07:56:45.142 WARNING  OSL mismatch: got 5 tokens (requested 7, diff -28.6%) (osl_mismatch_metrics.py:190)
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+07:56:47.829 WARNING  OSL mismatch: got 13 tokens (requested 412, diff -96.8%) (osl_mismatch_metrics.py:190)
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+07:56:48.123 WARNING  OSL mismatch: got 14 tokens (requested 317, diff -95.6%) (osl_mismatch_metrics.py:190)
+07:56:48.394 WARNING  OSL mismatch: got 7 tokens (requested 11, diff -36.4%) (osl_mismatch_metrics.py:190)
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+07:56:52.486 WARNING  OSL mismatch: got 7 tokens (requested 10, diff -30.0%) (osl_mismatch_metrics.py:190)
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+07:56:57.897 WARNING  OSL mismatch: got 11 tokens (requested 185, diff -94.1%) (osl_mismatch_metrics.py:190)
+07:56:58.299 WARNING  OSL mismatch: got 12 tokens (requested 38, diff -68.4%) (osl_mismatch_metrics.py:190)
+07:56:58.489 WARNING  OSL mismatch: got 53 tokens (requested 64, diff -17.2%) (osl_mismatch_metrics.py:190)
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+  PydanticSerializationUnexpectedValue(Expected `enum` - serialized value may not be as expected [field_name='transport', input_value='http', input_type=str])
+  return self.__pydantic_serializer__.to_python(
+07:57:00.134 WARNING  OSL mismatch: got 5 tokens (requested 26, diff -80.8%) (osl_mismatch_metrics.py:190)
+07:57:02.476 WARNING  OSL mismatch: got 66 tokens (requested 441, diff -85.0%) (osl_mismatch_metrics.py:190)
+07:57:02.667 WARNING  OSL mismatch: got 13 tokens (requested 397, diff -96.7%) (osl_mismatch_metrics.py:190)
+07:57:02.672 WARNING  OSL mismatch: got 61 tokens (requested 88, diff -30.7%) (osl_mismatch_metrics.py:190)
+07:57:05.657 WARNING  OSL mismatch: got 22 tokens (requested 28, diff -21.4%) (osl_mismatch_metrics.py:190)
+07:57:06.377 WARNING  OSL mismatch: got 92 tokens (requested 108, diff -14.8%) (osl_mismatch_metrics.py:190)
+07:57:07.093 WARNING  OSL mismatch: got 13 tokens (requested 314, diff -95.9%) (osl_mismatch_metrics.py:190)
+07:57:09.598 WARNING  OSL mismatch: got 44 tokens (requested 122, diff -63.9%) (osl_mismatch_metrics.py:190)
+07:57:10.177 WARNING  OSL mismatch: got 3 tokens (requested 4, diff -25.0%) (osl_mismatch_metrics.py:190)
+07:57:13.349 WARNING  OSL mismatch: got 33 tokens (requested 166, diff -80.1%) (osl_mismatch_metrics.py:190)
+07:57:15.097 WARNING  OSL mismatch: got 127 tokens (requested 151, diff -15.9%) (osl_mismatch_metrics.py:190)
+07:57:18.324 WARNING  OSL mismatch: got 56 tokens (requested 65, diff -13.8%) (osl_mismatch_metrics.py:190)
+07:57:18.899 WARNING  OSL mismatch: got 1 tokens (requested 9, diff -88.9%) (osl_mismatch_metrics.py:190)
+07:57:20.337 WARNING  OSL mismatch: got 117 tokens (requested 158, diff -25.9%) (osl_mismatch_metrics.py:190)
+07:57:24.692 WARNING  OSL mismatch: got 13 tokens (requested 59, diff -78.0%) (osl_mismatch_metrics.py:190)
+07:57:25.695 NOTICE   Phase profiling sending complete | sent=1,000, completed=422, in_flight=578 | sessions: sent=1,000, completed=422 (runner.py:466)
+07:57:25.700 INFO     Sent 1,000 requests. Waiting for all to complete... (records_manager.py:400)
+07:57:26.755 WARNING  OSL mismatch: got 168 tokens (requested 458, diff -63.3%) (osl_mismatch_metrics.py:190)
+07:57:27.329 WARNING  OSL mismatch: got 101 tokens (requested 205, diff -50.7%) (osl_mismatch_metrics.py:190)
+07:57:27.612 WARNING  OSL mismatch: got 173 tokens (requested 290, diff -40.3%) (osl_mismatch_metrics.py:190)
+07:57:30.158 WARNING  OSL mismatch: got 53 tokens (requested 721, diff -92.6%) (osl_mismatch_metrics.py:190)
+07:57:30.168 WARNING  OSL mismatch: got 17 tokens (requested 344, diff -95.1%) (osl_mismatch_metrics.py:190)
+07:57:30.988 WARNING  OSL mismatch: got 133 tokens (requested 323, diff -58.8%) (osl_mismatch_metrics.py:190)
+07:57:35.305 WARNING  OSL mismatch: got 96 tokens (requested 203, diff -52.7%) (osl_mismatch_metrics.py:190)
+07:57:42.772 WARNING  OSL mismatch: got 224 tokens (requested 279, diff -19.7%) (osl_mismatch_metrics.py:190)
+07:57:45.306 WARNING  OSL mismatch: got 241 tokens (requested 445, diff -45.8%) (osl_mismatch_metrics.py:190)
+07:57:47.209 WARNING  OSL mismatch: got 122 tokens (requested 275, diff -55.6%) (osl_mismatch_metrics.py:190)
+07:57:47.378 WARNING  OSL mismatch: got 103 tokens (requested 150, diff -31.3%) (osl_mismatch_metrics.py:190)
+07:57:49.118 WARNING  OSL mismatch: got 95 tokens (requested 279, diff -65.9%) (osl_mismatch_metrics.py:190)
+07:57:49.813 WARNING  OSL mismatch: got 137 tokens (requested 219, diff -37.4%) (osl_mismatch_metrics.py:190)
+07:57:51.406 WARNING  OSL mismatch: got 256 tokens (requested 330, diff -22.4%) (osl_mismatch_metrics.py:190)
+07:57:53.364 WARNING  OSL mismatch: got 268 tokens (requested 295, diff -9.2%) (osl_mismatch_metrics.py:190)
+07:57:59.586 WARNING  OSL mismatch: got 199 tokens (requested 292, diff -31.8%) (osl_mismatch_metrics.py:190)
+07:58:10.894 WARNING  OSL mismatch: got 353 tokens (requested 605, diff -41.7%) (osl_mismatch_metrics.py:190)
+07:58:14.968 WARNING  OSL mismatch: got 392 tokens (requested 551, diff -28.9%) (osl_mismatch_metrics.py:190)
+07:58:19.530 WARNING  OSL mismatch: got 288 tokens (requested 320, diff -10.0%) (osl_mismatch_metrics.py:190)
+07:58:47.779 WARNING  OSL mismatch: got 550 tokens (requested 907, diff -39.4%) (osl_mismatch_metrics.py:190)
+07:59:19.029 WARNING  OSL mismatch: got 642 tokens (requested 920, diff -30.2%) (osl_mismatch_metrics.py:190)
+07:59:40.703 WARNING  OSL mismatch: got 725 tokens (requested 804, diff -9.8%) (osl_mismatch_metrics.py:190)
+07:59:42.569 WARNING  OSL mismatch: got 607 tokens (requested 748, diff -18.9%) (osl_mismatch_metrics.py:190)
+08:01:47.710 NOTICE   Phase profiling complete | completed=1,000, cancelled=0, errors=0 | sessions: completed=1,000, cancelled=0 | elapsed=313.26s (runner.py:543)
+08:01:47.717 NOTICE   All credits completed (phase_orchestrator.py:169)
+08:01:47.718 INFO     Received CREDIT_PHASE_COMPLETE message, Phase complete: PhaseRecordsStats(phase=CreditPhase.PROFILING, start_ns=1779350194450846654, sent_end_ns=1779350245695181730, requests_end_ns=1779350507710924100, total_expected_requests=1000, expected_duration_sec=None, expected_num_sessions=None, expected_grace_period_sec=None, final_requests_sent=None, final_requests_completed=1000, final_requests_cancelled=0, final_request_errors=0, final_sent_sessions=None, final_completed_sessions=None, final_cancelled_sessions=None, timeout_triggered=False, grace_period_timeout_triggered=False, was_cancelled=False, records_end_ns=None, success_records=999, error_records=0) (records_manager.py:416)
+08:01:47.722 INFO     Received credits complete from 'timing_manager' (system_controller.py:411)
+08:01:47.724 NOTICE   All requests have completed, please wait for the results to be processed (currently 999 of 1,000 records processed)... (records_manager.py:419)
+08:01:47.729 INFO     All credits complete, please wait for the results to be processed... (records_manager.py:434)
+08:01:47.736 INFO     Processed 1000 valid requests and 0 errors (1000 total). (records_manager.py:259)
+08:01:47.741 INFO     Received all records, processing now... (records_manager.py:263)
+08:01:47.747 INFO     Server Metrics: Profiling complete, capturing final metrics... (manager.py:246)
+08:01:47.748 INFO     Waiting 2.0s for server metrics flush period... (records_manager.py:313)
+08:01:49.717 INFO     Processing records results... (records_manager.py:581)
+08:01:49.777 INFO     Waiting for server metrics results... (system_controller.py:709)
+08:01:49.782 INFO     _finalize_and_process_results completed (records_manager.py:320)
+08:01:49.783 INFO     Waiting for server metrics results... (system_controller.py:709)
+08:01:49.790 INFO     All results received, initiating shutdown (system_controller.py:704)
+08:01:50.414 INFO     Exporting all records (exporter_manager.py:61)
+08:01:50.504 INFO     Exporting console data (exporter_manager.py:117)
+
+
+                                    NVIDIA AIPerf | LLM Metrics                                     
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃       Metric ┃       avg ┃    min ┃        max ┃        p99 ┃        p90 ┃       p50 ┃       std ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩
+│      Time to │  1,372.33 │ 366.44 │   7,923.02 │   7,147.47 │   4,505.28 │    729.11 │  1,722.51 │
+│  First Token │           │        │            │            │            │           │           │
+│         (ms) │           │        │            │            │            │           │           │
+│      Time to │    289.79 │ 157.25 │     973.31 │     973.07 │     298.88 │    282.83 │    151.55 │
+│ Second Token │           │        │            │            │            │           │           │
+│         (ms) │           │        │            │            │            │           │           │
+│      Time to │  1,372.33 │ 366.44 │   7,923.02 │   7,147.47 │   4,505.28 │    729.11 │  1,722.51 │
+│ First Output │           │        │            │            │            │           │           │
+│   Token (ms) │           │        │            │            │            │           │           │
+│      Request │ 45,349.81 │ 695.80 │ 274,451.94 │ 181,915.54 │ 109,553.05 │ 32,819.07 │ 45,471.39 │
+│ Latency (ms) │           │        │            │            │            │           │           │
+│  Inter Token │    248.65 │ 173.36 │   1,004.26 │     388.24 │     293.40 │    238.53 │     48.92 │
+│ Latency (ms) │           │        │            │            │            │           │           │
+│ Output Token │      4.14 │   1.00 │       5.77 │       5.67 │       4.93 │      4.19 │      0.69 │
+│   Throughput │           │        │            │            │            │           │           │
+│     Per User │           │        │            │            │            │           │           │
+│ (tokens/sec… │           │        │            │            │            │           │           │
+│   E2E Output │      3.86 │   0.60 │       5.41 │       5.32 │       4.83 │      4.08 │      0.90 │
+│        Token │           │        │            │            │            │           │           │
+│   Throughput │           │        │            │            │            │           │           │
+│ (tokens/sec… │           │        │            │            │            │           │           │
+│       Output │    191.58 │   1.00 │   1,164.00 │     774.01 │     497.00 │    128.50 │    200.97 │
+│     Sequence │           │        │            │            │            │           │           │
+│       Length │           │        │            │            │            │           │           │
+│     (tokens) │           │        │            │            │            │           │           │
+│        Input │    225.66 │   4.00 │   1,022.00 │     877.21 │     640.40 │    111.50 │    249.35 │
+│     Sequence │           │        │            │            │            │           │           │
+│       Length │           │        │            │            │            │           │           │
+│     (tokens) │           │        │            │            │            │           │           │
+│ Output Token │    611.64 │    N/A │        N/A │        N/A │        N/A │       N/A │       N/A │
+│   Throughput │           │        │            │            │            │           │           │
+│ (tokens/sec) │           │        │            │            │            │           │           │
+│      Request │      3.19 │    N/A │        N/A │        N/A │        N/A │       N/A │       N/A │
+│   Throughput │           │        │            │            │            │           │           │
+│ (requests/s… │           │        │            │            │            │           │           │
+│      Request │  1,000.00 │    N/A │        N/A │        N/A │        N/A │       N/A │       N/A │
+│        Count │           │        │            │            │            │           │           │
+│   (requests) │           │        │            │            │            │           │           │
+└──────────────┴───────────┴────────┴────────────┴────────────┴────────────┴───────────┴───────────┘
+
+╭──────────────────────────── Output Sequence Length Mismatch Warning ─────────────────────────────╮
+│  46 of 1,000 requests (4.6%) have output length differing from requested by more than the        │
+│  threshold.                                                                                      │
+│  Threshold (tokens): min(requested x 5%, 50)                                                     │
+│  Average mismatch: -2.3%                                                                         │
+│                                                                                                  │
+│  Why: Server hit EOS token before reaching requested output length.                              │
+│                                                                                                  │
+│  Fix Options:                                                                                    │
+│    • --extra-inputs ignore_eos:true — Generate until max_tokens (vLLM, TensorRT-LLM)             │
+│    • --extra-inputs min_tokens:<N> — Set minimum output length (vLLM, TensorRT-LLM, SGLang)      │
+│    • --use-server-token-count — Use server-reported token counts if tokenizer mismatch           │
+│  suspected                                                                                       │
+│                                                                                                  │
+│  Diagnostics:                                                                                    │
+│    • Review profile_export.jsonl → osl_mismatch_diff_pct for per-request values                  │
+│    • Adjust: AIPERF_METRICS_OSL_MISMATCH_PCT_THRESHOLD=5                                         │
+│    • Adjust: AIPERF_METRICS_OSL_MISMATCH_MAX_TOKEN_THRESHOLD=50                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+CLI Command: aiperf profile --model 'Qwen3-30B-A3B-Instruct-2507' --tokenizer 
+'Qwen/Qwen3-30B-A3B-Instruct-2507' --url 'http://localhost:8000' --endpoint-type 'chat' --streaming 
+--public-dataset 'sharegpt' --dataset-sampling-strategy 'shuffle' --random-seed 42 --request-count 
+1000 --request-rate 20 --arrival-pattern 'poisson' --wait-for-model-timeout 600 
+--wait-for-model-mode 'models' --artifact-dir 'playground/out/aiperf/2026-05-21T07-54-03Z' --ui-type
+None
+Benchmark Duration: 313.22 sec
+CSV Export: 
+/data/zihan/projects/vllm-nvlink/playground/out/aiperf/2026-05-21T07-54-03Z/profile_export_aiperf.cs
+v
+JSON Export: 
+/data/zihan/projects/vllm-nvlink/playground/out/aiperf/2026-05-21T07-54-03Z/profile_export_aiperf.js
+on
+Server Metrics CSV Export: 
+/data/zihan/projects/vllm-nvlink/playground/out/aiperf/2026-05-21T07-54-03Z/server_metrics_export.cs
+v
+Server Metrics JSON Export: 
+/data/zihan/projects/vllm-nvlink/playground/out/aiperf/2026-05-21T07-54-03Z/server_metrics_export.js
+on
+Log File: 
+/data/zihan/projects/vllm-nvlink/playground/out/aiperf/2026-05-21T07-54-03Z/logs/aiperf.log
+

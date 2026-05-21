@@ -1,110 +1,135 @@
-<!-- markdownlint-disable MD001 MD041 -->
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vllm-project/vllm/main/docs/assets/logos/vllm-logo-text-dark.png">
-    <img alt="vLLM" src="https://raw.githubusercontent.com/vllm-project/vllm/main/docs/assets/logos/vllm-logo-text-light.png" width=55%>
-  </picture>
-</p>
+# vllm-nvlink
 
-<h3 align="center">
-Easy, fast, and cheap LLM serving for everyone
-</h3>
+A snapshot of [vLLM](https://github.com/vllm-project/vllm) **v0.20.0** (upstream
+commit `88d34c6409e9fb3c7b8ca0c04756f061d2099eb1`), set up for fast local
+editable development against the matching precompiled wheel.
 
-<p align="center">
-| <a href="https://docs.vllm.ai"><b>Documentation</b></a> | <a href="https://blog.vllm.ai/"><b>Blog</b></a> | <a href="https://arxiv.org/abs/2309.06180"><b>Paper</b></a> | <a href="https://x.com/vllm_project"><b>Twitter/X</b></a> | <a href="https://discuss.vllm.ai"><b>User Forum</b></a> | <a href="https://slack.vllm.ai"><b>Developer Slack</b></a> |
-</p>
-
-🔥 We have built a vLLM website to help you get started with vLLM. Please visit [vllm.ai](https://vllm.ai) to learn more.
-For events, please visit [vllm.ai/events](https://vllm.ai/events) to join us.
+The original upstream README is preserved as [README.old.md](README.old.md).
 
 ---
 
-## About
+## 1. Install locally with `build.sh`
 
-vLLM is a fast and easy-to-use library for LLM inference and serving.
+The `build.sh` script at the repo root automates the whole setup:
 
-Originally developed in the [Sky Computing Lab](https://sky.cs.berkeley.edu) at UC Berkeley, vLLM has grown into one of the most active open-source AI projects built and maintained by a diverse community of many dozens of academic institutions and companies from over 2000 contributors.
+1. Creates (or reuses) a conda env named **`vllm-nvlink`** with Python 3.12.
+2. Installs `uv` inside it (per `AGENTS.md`, all Python installs go through
+   `uv`).
+3. Performs an editable install of this repo, pulling the precompiled wheel
+   matching upstream commit `88d34c6409e9fb3c7b8ca0c04756f061d2099eb1`. This
+   also brings in `flashinfer-python` / `flashinfer-cubin` at the version
+   pinned in [requirements/cuda.txt](requirements/cuda.txt), so the FlashInfer
+   attention backend is ready to use.
+4. Installs extras not bundled with vLLM:
+   - Figure-drawing: `matplotlib`, `seaborn`, `plotly`
+   - NVIDIA [`aiperf`](https://github.com/ai-dynamo/aiperf) evaluation tool
 
-vLLM is fast with:
+### Prerequisites
 
-- State-of-the-art serving throughput
-- Efficient management of attention key and value memory with [**PagedAttention**](https://blog.vllm.ai/2023/06/20/vllm.html)
-- Continuous batching of incoming requests, chunked prefill, prefix caching
-- Fast and flexible model execution with piecewise and full CUDA/HIP graphs
-- Quantization: FP8, MXFP8/MXFP4, NVFP4, INT8, INT4, GPTQ/AWQ, GGUF, compressed-tensors, ModelOpt, TorchAO, and [more](https://docs.vllm.ai/en/latest/features/quantization/index.html)
-- Optimized attention kernels including FlashAttention, FlashInfer, TRTLLM-GEN, FlashMLA, and Triton
-- Optimized GEMM/MoE kernels for various precisions using CUTLASS, TRTLLM-GEN, CuTeDSL
-- Speculative decoding including n-gram, suffix, EAGLE, DFlash
-- Automatic kernel generation and graph-level transformations using torch.compile
-- Disaggregated prefill, decode, and encode
+- Linux with NVIDIA GPU(s) and a working CUDA driver
+- `conda` (Miniconda / Anaconda / Miniforge) on `PATH`
 
-vLLM is flexible and easy to use with:
-
-- Seamless integration with popular Hugging Face models
-- High-throughput serving with various decoding algorithms, including *parallel sampling*, *beam search*, and more
-- Tensor, pipeline, data, expert, and context parallelism for distributed inference
-- Streaming outputs
-- Generation of structured outputs using xgrammar or guidance
-- Tool calling and reasoning parsers
-- OpenAI-compatible API server, plus Anthropic Messages API and gRPC support
-- Efficient multi-LoRA support for dense and MoE layers
-- Support for NVIDIA GPUs, AMD GPUs, and x86/ARM/PowerPC CPUs. Additionally, diverse hardware plugins such as Google TPUs, Intel Gaudi, IBM Spyre, Huawei Ascend, Rebellions NPU, Apple Silicon, MetaX GPU, and more.
-
-vLLM seamlessly supports 200+ model architectures on Hugging Face, including:
-
-- Decoder-only LLMs (e.g., Llama, Qwen, Gemma)
-- Mixture-of-Expert LLMs (e.g., Mixtral, DeepSeek-V3, Qwen-MoE, GPT-OSS)
-- Hybrid attention and state-space models (e.g., Mamba, Qwen3.5)
-- Multi-modal models (e.g., LLaVA, Qwen-VL, Pixtral)
-- Embedding and retrieval models (e.g., E5-Mistral, GTE, ColBERT)
-- Reward and classification models (e.g., Qwen-Math)
-
-Find the full list of supported models [here](https://docs.vllm.ai/en/latest/models/supported_models.html).
-
-## Getting Started
-
-Install vLLM with [`uv`](https://docs.astral.sh/uv/) (recommended) or `pip`:
+### Run it
 
 ```bash
-uv pip install vllm
+./build.sh
 ```
 
-Or [build from source](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source) for development.
+The script is **idempotent** — re-running it reuses the existing env and only
+reinstalls packages that changed.
 
-Visit our [documentation](https://docs.vllm.ai/en/latest/) to learn more.
+Optional environment overrides:
 
-- [Installation](https://docs.vllm.ai/en/latest/getting_started/installation.html)
-- [Quickstart](https://docs.vllm.ai/en/latest/getting_started/quickstart.html)
-- [List of Supported Models](https://docs.vllm.ai/en/latest/models/supported_models.html)
+| Variable             | Default       | Purpose                          |
+| -------------------- | ------------- | -------------------------------- |
+| `VLLM_CONDA_ENV`     | `vllm-nvlink` | Conda env name                   |
+| `VLLM_PYTHON_VERSION`| `3.12`        | Python version for the conda env |
 
-## Contributing
+Activate the env afterwards:
 
-We welcome and value any contributions and collaborations.
-Please check out [Contributing to vLLM](https://docs.vllm.ai/en/latest/contributing/index.html) for how to get involved.
-
-## Citation
-
-If you use vLLM for your research, please cite our [paper](https://arxiv.org/abs/2309.06180):
-
-```bibtex
-@inproceedings{kwon2023efficient,
-  title={Efficient Memory Management for Large Language Model Serving with PagedAttention},
-  author={Woosuk Kwon and Zhuohan Li and Siyuan Zhuang and Ying Sheng and Lianmin Zheng and Cody Hao Yu and Joseph E. Gonzalez and Hao Zhang and Ion Stoica},
-  booktitle={Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles},
-  year={2023}
-}
+```bash
+conda activate vllm-nvlink
 ```
 
-## Contact Us
+### Verify the install
 
-<!-- --8<-- [start:contact-us] -->
-- For technical questions and feature requests, please use GitHub [Issues](https://github.com/vllm-project/vllm/issues)
-- For discussing with fellow users, please use the [vLLM Forum](https://discuss.vllm.ai)
-- For coordinating contributions and development, please use [Slack](https://slack.vllm.ai)
-- For security disclosures, please use GitHub's [Security Advisories](https://github.com/vllm-project/vllm/security/advisories) feature
-- For collaborations and partnerships, please contact us at [collaboration@vllm.ai](mailto:collaboration@vllm.ai)
-<!-- --8<-- [end:contact-us] -->
+```bash
+python -c "import vllm; print(vllm.__version__)"
+```
 
-## Media Kit
+---
 
-- If you wish to use vLLM's logo, please refer to [our media kit repo](https://github.com/vllm-project/media-kit)
+## 2. Start an OpenAI-compatible server
+
+vLLM ships an OpenAI-compatible HTTP server. Activate the env first, then
+launch it with the model of your choice:
+
+```bash
+conda activate vllm-nvlink
+
+# Optional: use the FlashInfer attention backend
+export VLLM_ATTENTION_BACKEND=FLASHINFER
+
+vllm serve meta-llama/Llama-3.1-8B-Instruct \
+    --host 0.0.0.0 \
+    --port 8000
+```
+
+Common flags:
+
+| Flag                          | Purpose                                            |
+| ----------------------------- | -------------------------------------------------- |
+| `--host` / `--port`           | Bind address (default `0.0.0.0:8000`)              |
+| `--tensor-parallel-size N`    | Shard the model across `N` GPUs                    |
+| `--gpu-memory-utilization F`  | Fraction of GPU memory to use (default `0.9`)      |
+| `--max-model-len N`           | Cap on context length                              |
+| `--api-key <key>`             | Require this key in the `Authorization` header     |
+| `--served-model-name <name>`  | Name to expose in the OpenAI API responses         |
+
+Run `vllm serve --help` to see all options.
+
+### Smoke-test with `curl`
+
+```bash
+curl http://localhost:8000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "meta-llama/Llama-3.1-8B-Instruct",
+        "messages": [{"role": "user", "content": "Hello!"}]
+    }'
+```
+
+### Use it from the OpenAI Python client
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="EMPTY")
+
+resp = client.chat.completions.create(
+    model="meta-llama/Llama-3.1-8B-Instruct",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+print(resp.choices[0].message.content)
+```
+
+### Benchmark with NVIDIA AIPerf
+
+With the server running:
+
+```bash
+aiperf profile \
+    --model meta-llama/Llama-3.1-8B-Instruct \
+    --endpoint-type chat \
+    --url http://localhost:8000
+```
+
+See the [`aiperf` docs](https://github.com/ai-dynamo/aiperf) for full options.
+
+---
+
+## See also
+
+- [README.old.md](README.old.md) — original upstream vLLM README
+- [AGENTS.md](AGENTS.md) — contribution / tooling rules
+- [build.sh](build.sh) — the install script described above

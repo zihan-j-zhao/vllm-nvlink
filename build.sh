@@ -20,6 +20,7 @@ set -euo pipefail
 # ---- Config -----------------------------------------------------------------
 ENV_NAME="${VLLM_CONDA_ENV:-vllm-nvlink}"
 PYTHON_VERSION="${VLLM_PYTHON_VERSION:-3.12}"
+TORCH_BACKEND="${VLLM_TORCH_BACKEND:-auto}"
 # Pinned upstream commit whose precompiled wheel we want to reuse.
 PRECOMPILED_COMMIT="88d34c6409e9fb3c7b8ca0c04756f061d2099eb1"
 
@@ -62,12 +63,29 @@ uv --version
 # Tell uv to target the active conda env rather than creating a .venv.
 export VIRTUAL_ENV="$CONDA_PREFIX"
 
+uv_install_vllm() {
+    if [[ -n "$TORCH_BACKEND" && "$TORCH_BACKEND" != "none" ]]; then
+        uv pip install -e . --torch-backend="$TORCH_BACKEND"
+    else
+        uv pip install -e .
+    fi
+}
+
 # ---- Editable install with precompiled wheel -------------------------------
 export VLLM_USE_PRECOMPILED=1
 export VLLM_PRECOMPILED_WHEEL_COMMIT="$PRECOMPILED_COMMIT"
 
 echo "[build.sh] Installing vLLM (editable) with precompiled wheel @ $PRECOMPILED_COMMIT"
-uv pip install -e . --torch-backend=auto
+if ! uv_install_vllm; then
+    if [[ -z "${VLLM_TORCH_BACKEND+x}" && "$TORCH_BACKEND" == "auto" ]]; then
+        echo "[build.sh] uv torch backend auto failed; retrying with PyPI defaults."
+        echo "[build.sh] Set VLLM_TORCH_BACKEND to keep a specific uv torch backend."
+        TORCH_BACKEND=none
+        uv_install_vllm
+    else
+        exit 1
+    fi
+fi
 
 # ---- Extras ----------------------------------------------------------------
 # Figure drawing libs (not part of vLLM's runtime deps; useful for benchmarks

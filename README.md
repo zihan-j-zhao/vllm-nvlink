@@ -44,7 +44,7 @@ Optional environment overrides:
 | -------------------- | ------------- | -------------------------------- |
 | `VLLM_CONDA_ENV`     | `vllm-nvlink` | Conda env name                   |
 | `VLLM_PYTHON_VERSION`| `3.12`        | Python version for the conda env |
-| `VLLM_TORCH_BACKEND` | `auto`        | `uv` PyTorch backend; use `none` for PyPI defaults |
+| `VLLM_TORCH_BACKEND` | `auto`        | `uv` PyTorch backend; use `none` for PyPI defaults; setting this variable to any value disables the automatic fallback |
 
 Activate the env afterwards:
 

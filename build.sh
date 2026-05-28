@@ -62,6 +62,14 @@ uv --version
 # Tell uv to target the active conda env rather than creating a .venv.
 export VIRTUAL_ENV="$CONDA_PREFIX"
 
+# Force the default PyPI index, ignoring any user/system pip or uv config that
+# might point at a mirror (e.g. internal/proxy indexes).
+export PIP_INDEX_URL="https://pypi.org/simple/"
+export PIP_EXTRA_INDEX_URL=""
+export UV_INDEX_URL="https://pypi.org/simple/"
+export UV_DEFAULT_INDEX="https://pypi.org/simple/"
+export UV_EXTRA_INDEX_URL=""
+
 # ---- Editable install with precompiled wheel -------------------------------
 export VLLM_USE_PRECOMPILED=1
 export VLLM_PRECOMPILED_WHEEL_COMMIT="$PRECOMPILED_COMMIT"

@@ -17,6 +17,20 @@
 #   REQUEST_RATE         Average requests/sec (default: 20)
 #   REQUEST_COUNT        Total requests to send (default: 1000)
 #   RANDOM_SEED          Seed for shuffle sampling (default: 42)
+#   MAX_OUTPUT_TOKENS    Per-request cap on generated tokens (default: 500).
+#                        Passed via `--extra-inputs max_completion_tokens:N`.
+#                        AIPerf's openai_chat formatter calls
+#                        `payload.update(extras)` AFTER setting the per-row
+#                        `max_completion_tokens` from the ShareGPT dataset,
+#                        so this override wins (verified by inspecting the
+#                        produced inputs.json).
+#                        Note: neither `--output-tokens-mean` nor
+#                        `--extra-inputs max_tokens:N` works for built-in
+#                        ShareGPT — the former is ignored when the loader
+#                        already set per-turn max_tokens, and the latter
+#                        adds the legacy field while leaving the dataset's
+#                        `max_completion_tokens` in place (and vLLM prefers
+#                        the newer field).
 #   OUT_DIR              Artifact dir       (default: playground/out/aiperf/<UTC>)
 
 set -euo pipefail
@@ -29,8 +43,9 @@ MODEL="${MODEL:-Qwen/Qwen3-30B-A3B-Instruct-2507}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-$(basename "$MODEL")}"
 TOKENIZER="${TOKENIZER:-$MODEL}"
 REQUEST_RATE="${REQUEST_RATE:-20}"
-REQUEST_COUNT="${REQUEST_COUNT:-1000}"
+REQUEST_COUNT="${REQUEST_COUNT:-500}"
 RANDOM_SEED="${RANDOM_SEED:-42}"
+MAX_OUTPUT_TOKENS="${MAX_OUTPUT_TOKENS:-500}"
 TS="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
 OUT_DIR="${OUT_DIR:-playground/out/aiperf/$TS}"
 mkdir -p "$OUT_DIR"
@@ -48,8 +63,8 @@ echo "[run_aiperf] tokenizer          = $TOKENIZER"
 echo "[run_aiperf] request-rate       = $REQUEST_RATE req/s (Poisson)"
 echo "[run_aiperf] request-count      = $REQUEST_COUNT"
 echo "[run_aiperf] random-seed        = $RANDOM_SEED"
+echo "[run_aiperf] max-output-tokens  = $MAX_OUTPUT_TOKENS"
 echo "[run_aiperf] artifact-dir       = $OUT_DIR"
-
 # Wait for the server to be reachable. AIPerf has --wait-for-model-timeout
 # built in so we just hand the burden to it.
 exec "$AIPERF" profile \
@@ -64,6 +79,7 @@ exec "$AIPERF" profile \
     --request-count "$REQUEST_COUNT" \
     --request-rate "$REQUEST_RATE" \
     --arrival-pattern poisson \
+    --extra-inputs "max_completion_tokens:${MAX_OUTPUT_TOKENS}" \
     --wait-for-model-timeout 600 \
     --wait-for-model-mode models \
     --artifact-dir "$OUT_DIR" \

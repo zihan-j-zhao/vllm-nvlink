@@ -32,8 +32,9 @@ Conventions:
 ### `moe_a2a/` — MoE all-to-all transfer profiling
 
 End-to-end pipeline that measures per-rank, per-layer, per-step MoE
-all-to-all transfer (bytes and tokens, in and out) on the AG/RS naive
-EP backend, driven by an online ShareGPT workload.
+all-to-all transfer (bytes and tokens, in and out, plus per-call GPU
+transfer time) on the AG/RS naive EP backend, driven by an online
+ShareGPT workload.
 
 **Scope this experiment is hard-asserted against (see
 [`vllm/distributed/moe_a2a_profiler.py`](../vllm/distributed/moe_a2a_profiler.py)):**
@@ -154,6 +155,19 @@ The per-step CSV has one row per `(rank, step_id, layer_idx)`:
 | `dispatch_out_tokens` / `dispatch_out_bytes` | Tensors received from the AG (own + peers). |
 | `combine_in_tokens` / `combine_in_bytes` | Full pre-RS tensor produced by experts. |
 | `combine_out_tokens` / `combine_out_bytes` | Local shard received from RS. |
+| `dispatch_time_ms` | Wall-clock duration of the AG dispatch on this rank, measured between two `torch.cuda.synchronize()` calls bracketing the collective. Empty if the trace predates timing instrumentation. |
+| `combine_time_ms` | Wall-clock duration of the RS combine on this rank, measured the same way. Empty if missing. |
+
+The timing columns are written inline by the profiler on each record.
+The synchronizations are device-wide drains, so enabling the profiler
+serializes the GPU around every collective: the per-call numbers are
+the *isolated* AG/RS duration with no compute/comm overlap, and the
+overall benchmark wall-clock is correspondingly inflated. This is by
+design — the trace is for offline characterization of the AG/RS choke
+point, not for representative throughput numbers. Older traces used a
+separate `moe_a2a_rank{rank}.jsonl.timing.jsonl` sidecar produced from
+CUDA events; `extract_per_step.py` still reads that sidecar when
+present for backward compatibility.
 
 #### Caveats
 

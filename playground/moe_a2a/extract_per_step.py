@@ -9,7 +9,8 @@ Schema (one row per (rank, step_id, layer_idx)):
     dispatch_in_tokens,  dispatch_in_bytes,
     dispatch_out_tokens, dispatch_out_bytes,
     combine_in_tokens,   combine_in_bytes,
-    combine_out_tokens,  combine_out_bytes
+    combine_out_tokens,  combine_out_bytes,
+    dispatch_time_ms,    combine_time_ms
 
 The user-facing interpretations the profiler was designed for are derivable
 from this:
@@ -20,6 +21,21 @@ from this:
       ``combine_out_bytes``
 * Tokens dispatched out:  ``dispatch_in_tokens``
 * Tokens combined in:     ``combine_out_tokens``
+* Per-call transfer time (host wall-clock between two
+  ``torch.cuda.synchronize()`` calls bracketing the collective; the
+  profiler intentionally serializes the GPU when timing, so this is the
+  isolated collective duration with no compute/comm overlap):
+      ``dispatch_time_ms`` / ``combine_time_ms``
+
+Timing source
+-------------
+
+Current traces carry ``time_ms`` directly on each main-JSONL record. For
+backward compatibility with older traces that used a separate
+``<jsonl-path>.timing.jsonl`` sidecar (per-call CUDA-event durations
+keyed by ``seq``), we still read the sidecar when it exists and merge
+it onto records by ``seq``. If neither source provides a time for a
+record, the time columns are written as empty strings.
 
 Sanity asserts (enabled by default; pass --no-assert to skip):
 
@@ -43,13 +59,51 @@ from pathlib import Path
 def _read_jsonl(paths: list[str]) -> list[dict]:
     records: list[dict] = []
     for path in paths:
+        # Per-rank `seq` is meaningful only within the file that emitted it;
+        # join the (legacy) timing sidecar before mixing records across ranks.
+        # Current traces carry `time_ms` directly on the main record, so the
+        # sidecar join is a no-op when it isn't present.
         with open(path) as f:
+            file_records = []
             for ln in f:
                 ln = ln.strip()
                 if not ln:
                     continue
-                records.append(json.loads(ln))
+                file_records.append(json.loads(ln))
+        timing = _read_timing_sidecar(path)
+        if timing:
+            for r in file_records:
+                seq = r.get("seq")
+                if seq is not None and seq in timing:
+                    r["time_ms"] = timing[seq]
+        records.extend(file_records)
     return records
+
+
+def _read_timing_sidecar(jsonl_path: str) -> dict[int, float]:
+    """Load a legacy sidecar ``<jsonl_path>.timing.jsonl`` if present.
+
+    Older profiler builds wrote per-call CUDA-event durations to a
+    sidecar; current builds inline ``time_ms`` on the main record. This
+    reader stays so old traces still convert.
+    """
+    sidecar = jsonl_path + ".timing.jsonl"
+    if not Path(sidecar).exists():
+        return {}
+    out: dict[int, float] = {}
+    with open(sidecar) as f:
+        for ln in f:
+            ln = ln.strip()
+            if not ln:
+                continue
+            rec = json.loads(ln)
+            out[int(rec["seq"])] = float(rec["time_ms"])
+    print(
+        f"[extract_per_step] loaded timing sidecar with {len(out)} entries: "
+        f"{sidecar}",
+        file=sys.stderr,
+    )
+    return out
 
 
 def _fold(records: list[dict]) -> dict[tuple[int, int, int], dict]:
@@ -72,6 +126,8 @@ def _fold(records: list[dict]) -> dict[tuple[int, int, int], dict]:
                 "combine_in_bytes": None,
                 "combine_out_tokens": None,
                 "combine_out_bytes": None,
+                "dispatch_time_ms": None,
+                "combine_time_ms": None,
             }
         row = rows[key]
         if r["kind"] == "dispatch":
@@ -79,11 +135,15 @@ def _fold(records: list[dict]) -> dict[tuple[int, int, int], dict]:
             row["dispatch_in_bytes"] = r["in_bytes"]
             row["dispatch_out_tokens"] = r["out_tokens"]
             row["dispatch_out_bytes"] = r["out_bytes"]
+            if "time_ms" in r:
+                row["dispatch_time_ms"] = r["time_ms"]
         elif r["kind"] == "combine":
             row["combine_in_tokens"] = r["in_tokens"]
             row["combine_in_bytes"] = r["in_bytes"]
             row["combine_out_tokens"] = r["out_tokens"]
             row["combine_out_bytes"] = r["out_bytes"]
+            if "time_ms" in r:
+                row["combine_time_ms"] = r["time_ms"]
         # else: ignore unknown kinds
     return rows
 
@@ -200,6 +260,11 @@ def main() -> None:
     args = ap.parse_args()
 
     paths = sorted(glob.glob(args.jsonl_glob))
+    # Filter out timing sidecars: the documented glob pattern
+    # `moe_a2a_rank*.jsonl` also matches `moe_a2a_rank0.jsonl.timing.jsonl`
+    # because `*` greedily spans dots. The sidecar is loaded separately by
+    # _read_jsonl, so drop it from the main file list.
+    paths = [p for p in paths if not p.endswith(".timing.jsonl")]
     if not paths:
         raise SystemExit(f"No files match: {args.jsonl_glob}")
     print(f"[extract_per_step] reading {len(paths)} files", file=sys.stderr)
@@ -257,13 +322,21 @@ def main() -> None:
         "dispatch_out_tokens", "dispatch_out_bytes",
         "combine_in_tokens", "combine_in_bytes",
         "combine_out_tokens", "combine_out_bytes",
+        "dispatch_time_ms", "combine_time_ms",
     ]
     with open(out_path, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         # Sort by (rank, step_id, layer_idx) for stable output.
         for key in sorted(rows.keys()):
-            w.writerow(rows[key])
+            row = rows[key]
+            # csv.DictWriter writes None as empty string; coerce explicitly
+            # so missing timing values land as "" (matches the older schema's
+            # treatment of absent fields).
+            for k in ("dispatch_time_ms", "combine_time_ms"):
+                if row.get(k) is None:
+                    row[k] = ""
+            w.writerow(row)
     print(f"[extract_per_step] wrote {out_path}", file=sys.stderr)
 
 

@@ -86,16 +86,33 @@ def _plot_rank(
         fontsize=20,
     )
 
-    # Semantics for the rank-local "outbound" / "inbound" labels:
-    #   dispatch_in_bytes   = bytes this rank pushes onto the AG (outbound)
-    #   dispatch_out_bytes  = bytes this rank receives from the AG (inbound)
-    #   combine_in_bytes    = bytes this rank pushes onto the RS  (outbound)
-    #   combine_out_bytes   = bytes this rank receives from the RS (inbound)
+    # Semantics for the rank-local "outbound" / "inbound" labels (wire
+    # traffic per direction, W=2 AG/RS). The CSV's dispatch_out_bytes and
+    # combine_in_bytes columns include this rank's OWN share (the full
+    # gathered / pre-scatter tensor sizes), so the inbound side of dispatch
+    # and the outbound side of combine must be derived by subtracting the
+    # rank-local contribution; otherwise those two panels overstate the
+    # wire transfer by ~2x (showing up to ~16 MiB instead of the true ~8
+    # MiB at max-batch).
+    #
+    #   dispatch outbound = dispatch_in_bytes                       (own AG send)
+    #   dispatch inbound  = dispatch_out_bytes - dispatch_in_bytes  (peer's AG share)
+    #   combine  outbound = combine_in_bytes  - combine_out_bytes   (peer's RS share)
+    #   combine  inbound  = combine_out_bytes                       (own RS keep)
+    di  = data["dispatch_in_bytes"]
+    do  = data["dispatch_out_bytes"]
+    ci  = data["combine_in_bytes"]
+    co  = data["combine_out_bytes"]
+    n = len(di)
+    dispatch_out_wire = di
+    dispatch_in_wire  = [do[i] - di[i] for i in range(n)]
+    combine_out_wire  = [ci[i] - co[i] for i in range(n)]
+    combine_in_wire   = co
     panels = [
-        (axes[0, 0], "dispatch_in_bytes",  "Dispatch (outbound)"),
-        (axes[0, 1], "dispatch_out_bytes", "Dispatch (inbound)"),
-        (axes[1, 0], "combine_in_bytes",   "Combine (outbound)"),
-        (axes[1, 1], "combine_out_bytes",  "Combine (inbound)"),
+        (axes[0, 0], dispatch_out_wire, "Dispatch (outbound)"),
+        (axes[0, 1], dispatch_in_wire,  "Dispatch (inbound)"),
+        (axes[1, 0], combine_out_wire,  "Combine (outbound)"),
+        (axes[1, 1], combine_in_wire,   "Combine (inbound)"),
     ]
     x_all = data["scheduled_tokens"]
     c_all = data["layer_idx"]
@@ -112,8 +129,8 @@ def _plot_rank(
     c = [c_all[i] for i in kept_idx]
 
     sc = None
-    for ax, col, title in panels:
-        y = [data[col][i] / MIB for i in kept_idx]
+    for ax, series, title in panels:
+        y = [series[i] / MIB for i in kept_idx]
         sc = ax.scatter(
             x, y, c=c, cmap="turbo",
             s=20, alpha=0.45, edgecolors="none",

@@ -13,13 +13,27 @@ Scope (refuses to start if any assumption is violated; see ``_enforce_scope``):
 
 Records one JSONL row per call into the choke point with::
 
-    {rank, step_id, layer_idx, layer_name, scheduled_tokens, kind,
-     world_size, in_tokens, in_bytes, out_tokens, out_bytes}
+    {seq, rank, step_id, layer_idx, layer_name, scheduled_tokens, kind,
+     world_size, in_tokens, in_bytes, out_tokens, out_bytes, time_ms}
 
 ``step_id`` and ``scheduled_tokens`` are published once per forward step from
 ``GPUModelRunner.execute_model``; ``layer_name`` is published once per MoE
 layer from ``MoeRunner._forward_impl``. Records are written in execution
-order; cross-rank alignment is by ``step_id``, not by record index.
+order; cross-rank alignment is by ``step_id``, not by record index. ``seq``
+is a per-process monotonic counter; kept for backward compatibility with
+older traces that joined a separate timing sidecar.
+
+Timing
+------
+
+The caller (cuda_communicator) brackets each collective with
+``torch.cuda.synchronize()`` and ``time.perf_counter()`` and passes the
+resulting ``time_ms`` to ``record()``, which writes it directly into the
+JSONL row. No separate sidecar is produced. The synchronization is a
+device-wide drain, so enabling the profiler measurably slows the run and
+removes any compute/comm overlap; this is acceptable for the use case
+(offline characterization of the AG/RS choke point) but means the trace
+is not representative of unprofiled wall-clock performance.
 """
 
 from __future__ import annotations
@@ -95,6 +109,9 @@ class _Profiler:
         # Set true after _enforce_scope succeeds; profile records only then.
         self._scope_ok: bool = False
         self._scope_checked: bool = False
+        # Monotonic per-process record counter; retained for backward
+        # compatibility with older traces (some downstream tooling joins on it).
+        self._seq: int = 0
 
         if self._enabled:
             atexit.register(self.close)
@@ -188,6 +205,7 @@ class _Profiler:
         world_size: int,
         in_tensors: Sequence[Any],
         out_tensors: Sequence[Any],
+        time_ms: float | None = None,
     ) -> None:
         if not self.is_enabled():
             return
@@ -195,20 +213,25 @@ class _Profiler:
         out_bytes = _sum_bytes(out_tensors)
         in_tokens = _first_dim(in_tensors)
         out_tokens = _first_dim(out_tensors)
-        rec = {
-            "rank": int(rank),
-            "step_id": self._step_id,
-            "layer_idx": _parse_layer_idx(self._layer_name),
-            "layer_name": self._layer_name,
-            "scheduled_tokens": self._scheduled_tokens,
-            "kind": kind,
-            "world_size": int(world_size),
-            "in_tokens": in_tokens,
-            "in_bytes": in_bytes,
-            "out_tokens": out_tokens,
-            "out_bytes": out_bytes,
-        }
         with self._lock:
+            seq = self._seq
+            self._seq += 1
+            rec = {
+                "seq": seq,
+                "rank": int(rank),
+                "step_id": self._step_id,
+                "layer_idx": _parse_layer_idx(self._layer_name),
+                "layer_name": self._layer_name,
+                "scheduled_tokens": self._scheduled_tokens,
+                "kind": kind,
+                "world_size": int(world_size),
+                "in_tokens": in_tokens,
+                "in_bytes": in_bytes,       # sizeof in_tensors (not necessarily the bytes over the wire)
+                "out_tokens": out_tokens,
+                "out_bytes": out_bytes,     # sizeof out_tensors (not necessarily the bytes over the wire)
+            }
+            if time_ms is not None:
+                rec["time_ms"] = float(time_ms)
             self._ensure_open(rank)
             assert self._fp is not None
             self._fp.write(json.dumps(rec, separators=(",", ":")) + "\n")

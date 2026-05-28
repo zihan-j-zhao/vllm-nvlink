@@ -2,6 +2,8 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 
+import time
+
 import torch
 from torch.distributed import ProcessGroup
 
@@ -408,14 +410,26 @@ class CudaCommunicator(DeviceCommunicatorBase):
         """
 
         assert self.all2all_manager is not None
+        _prof = _get_a2a_profiler()
+        # Bracket the collective with a device-wide sync + perf_counter when
+        # profiling. This serializes the GPU (kills compute/comm overlap) and
+        # is intentionally chosen over the lighter CUDA-events-on-stream
+        # approach for simplicity; the trace is for offline characterization
+        # of the AG/RS choke point, not for measuring overlapped throughput.
+        _start_t: float | None = None
+        if _prof.is_enabled():
+            torch.cuda.synchronize()
+            _start_t = time.perf_counter()
         result = self.all2all_manager.dispatch_router_logits(
             hidden_states,
             router_logits,
             is_sequence_parallel,
             extra_tensors,
         )
-        _prof = _get_a2a_profiler()
         if _prof.is_enabled():
+            torch.cuda.synchronize()
+            assert _start_t is not None
+            _elapsed_ms = (time.perf_counter() - _start_t) * 1000.0
             in_tensors: list = [hidden_states, router_logits]
             if extra_tensors is not None:
                 in_tensors.extend(extra_tensors)
@@ -430,6 +444,7 @@ class CudaCommunicator(DeviceCommunicatorBase):
                 world_size=self.all2all_manager.world_size,
                 in_tensors=in_tensors,
                 out_tensors=out_tensors,
+                time_ms=_elapsed_ms,
             )
         return result
 
@@ -449,6 +464,11 @@ class CudaCommunicator(DeviceCommunicatorBase):
         This is a no-op in the base class.
         """
         assert self.all2all_manager is not None
+        _prof = _get_a2a_profiler()
+        _start_t: float | None = None
+        if _prof.is_enabled():
+            torch.cuda.synchronize()
+            _start_t = time.perf_counter()
         result = self.all2all_manager.dispatch(
             hidden_states,
             topk_weights,
@@ -456,8 +476,10 @@ class CudaCommunicator(DeviceCommunicatorBase):
             is_sequence_parallel,
             extra_tensors=extra_tensors,
         )
-        _prof = _get_a2a_profiler()
         if _prof.is_enabled():
+            torch.cuda.synchronize()
+            assert _start_t is not None
+            _elapsed_ms = (time.perf_counter() - _start_t) * 1000.0
             in_tensors: list = [hidden_states, topk_weights, topk_ids]
             if extra_tensors is not None:
                 in_tensors.extend(extra_tensors)
@@ -471,6 +493,7 @@ class CudaCommunicator(DeviceCommunicatorBase):
                 world_size=self.all2all_manager.world_size,
                 in_tensors=in_tensors,
                 out_tensors=out_tensors,
+                time_ms=_elapsed_ms,
             )
         return result
 
@@ -482,18 +505,26 @@ class CudaCommunicator(DeviceCommunicatorBase):
         This is a no-op in the base class.
         """
         assert self.all2all_manager is not None
+        _prof = _get_a2a_profiler()
+        _start_t: float | None = None
+        if _prof.is_enabled():
+            torch.cuda.synchronize()
+            _start_t = time.perf_counter()
         result = self.all2all_manager.combine(
             hidden_states,
             is_sequence_parallel,
         )
-        _prof = _get_a2a_profiler()
         if _prof.is_enabled():
+            torch.cuda.synchronize()
+            assert _start_t is not None
+            _elapsed_ms = (time.perf_counter() - _start_t) * 1000.0
             _prof.record(
                 kind="combine",
                 rank=self.all2all_manager.rank,
                 world_size=self.all2all_manager.world_size,
                 in_tensors=[hidden_states],
                 out_tensors=[result],
+                time_ms=_elapsed_ms,
             )
         return result
 

@@ -1,0 +1,1439 @@
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:299] 
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:299]        █     █     █▄   ▄█
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:299]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.1.dev3+g28d824c49.d20260527
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:299]   █▄█▀ █     █     █     █  model   Qwen/Qwen3-30B-A3B-Instruct-2507
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:299]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:299] 
+(APIServer pid=1369635) INFO 05-28 00:58:22 [utils.py:233] non-default args: {'model': 'Qwen/Qwen3-30B-A3B-Instruct-2507', 'enforce_eager': True, 'served_model_name': ['Qwen3-30B-A3B-Instruct-2507'], 'attention_backend': 'FLASHINFER', 'data_parallel_size': 2, 'enable_expert_parallel': True, 'gpu_memory_utilization': 0.85, 'max_num_batched_tokens': 4096, 'moe_backend': 'triton', 'attention_config': AttentionConfig(backend=None, flash_attn_version=None, use_prefill_decode_attention=False, flash_attn_max_num_splits_for_cuda_graph=32, tq_max_kv_splits_for_cuda_graph=32, use_cudnn_prefill=False, use_trtllm_ragged_deepseek_prefill=False, use_trtllm_attention=False, disable_flashinfer_prefill=True, disable_flashinfer_q_quantization=False, use_prefill_query_quantization=False, use_fp4_indexer_cache=False), 'disable_log_stats': True}
+(APIServer pid=1369635) Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+(APIServer pid=1369635) INFO 05-28 00:58:23 [model.py:555] Resolved architecture: Qwen3MoeForCausalLM
+(APIServer pid=1369635) INFO 05-28 00:58:23 [model.py:1680] Using max model len 262144
+(APIServer pid=1369635) INFO 05-28 00:58:23 [scheduler.py:239] Chunked prefill is enabled with max_num_batched_tokens=4096.
+(APIServer pid=1369635) INFO 05-28 00:58:23 [vllm.py:840] Asynchronous scheduling is enabled.
+(APIServer pid=1369635) INFO 05-28 00:58:23 [vllm.py:850] Disabling NCCL for DP synchronization when using async scheduling.
+(APIServer pid=1369635) WARNING 05-28 00:58:23 [vllm.py:896] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(APIServer pid=1369635) WARNING 05-28 00:58:23 [vllm.py:914] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=1369635) INFO 05-28 00:58:23 [kernel.py:205] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'])
+(APIServer pid=1369635) INFO 05-28 00:58:26 [vllm.py:1089] Cudagraph is disabled under eager mode
+(APIServer pid=1369635) INFO 05-28 00:58:26 [compilation.py:303] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=1369635) INFO 05-28 00:58:39 [utils.py:1035] Started DP Coordinator process (PID: 1370116)
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:58:52 [core.py:109] Initializing a V1 LLM engine (v0.1.dev3+g28d824c49.d20260527) with config: model='Qwen/Qwen3-30B-A3B-Instruct-2507', speculative_config=None, tokenizer='Qwen/Qwen3-30B-A3B-Instruct-2507', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=2, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=Qwen3-30B-A3B-Instruct-2507, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [4096], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native']), enable_flashinfer_autotune=True, moe_backend='triton')
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:58:52 [multiproc_executor.py:139] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.45.241.30 (local), world_size=1, local_world_size=1
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:58:52 [multiproc_executor.py:139] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.45.241.30 (local), world_size=1, local_world_size=1
+INFO 05-28 00:59:09 [nixl_utils.py:20] Setting UCX_RCACHE_MAX_UNRELEASED to '1024' to avoid a rare memory leak in UCX when using NIXL.
+WARNING 05-28 00:59:09 [nixl_utils.py:34] NIXL is not available
+WARNING 05-28 00:59:09 [nixl_utils.py:44] NIXL agent config is not available
+INFO 05-28 00:59:09 [nixl_utils.py:20] Setting UCX_RCACHE_MAX_UNRELEASED to '1024' to avoid a rare memory leak in UCX when using NIXL.
+WARNING 05-28 00:59:09 [nixl_utils.py:34] NIXL is not available
+WARNING 05-28 00:59:09 [nixl_utils.py:44] NIXL agent config is not available
+(Worker pid=1370652) INFO 05-28 00:59:15 [parallel_state.py:1402] world_size=2 rank=0 local_rank=0 distributed_init_method=tcp://127.0.0.1:50037 backend=nccl
+(Worker pid=1370658) INFO 05-28 00:59:16 [parallel_state.py:1402] world_size=2 rank=1 local_rank=1 distributed_init_method=tcp://127.0.0.1:50037 backend=nccl
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Bootstrap: Using eth0:10.45.241.30<0>
+(Worker pid=1370652) INFO 05-28 00:59:19 [pynccl.py:111] vLLM is using nccl==2.28.9
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO cudaDriverVersion 13000
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO cudaDriverVersion 13000
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Bootstrap: Using eth0:10.45.241.30<0>
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 0.
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO NET/IB : Using [0]mlx5_0:1/IB [1]mlx5_1:1/IB [2]mlx5_2:1/IB [3]mlx5_3:1/IB [4]mlx5_4:1/IB [5]mlx5_7:1/IB [6]mlx5_8:1/IB [7]mlx5_9:1/IB [8]mlx5_10:1/IB [9]mlx5_11:1/IB [10]mlx5_12:1/IB [11]mlx5_13:1/IB [RO]; OOB eth0:10.45.241.30<0>
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Initialized NET plugin IB
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Assigned NET plugin IB to comm
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Assigned GIN plugin GIN_IB_GDAKI to comm
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Using network IB
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO DMA-BUF is available on GPU device 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ncclCommInitRank comm 0x5bfede095fc0 rank 1 nranks 2 cudaDev 1 nvmlDev 7 busId dc000 commId 0x4f7f2a31f5e9c51c - Init START
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 0.
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO NET/IB : Using [0]mlx5_0:1/IB [1]mlx5_1:1/IB [2]mlx5_2:1/IB [3]mlx5_3:1/IB [4]mlx5_4:1/IB [5]mlx5_7:1/IB [6]mlx5_8:1/IB [7]mlx5_9:1/IB [8]mlx5_10:1/IB [9]mlx5_11:1/IB [10]mlx5_12:1/IB [11]mlx5_13:1/IB [RO]; OOB eth0:10.45.241.30<0>
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Initialized NET plugin IB
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Assigned NET plugin IB to comm
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Assigned GIN plugin GIN_IB_GDAKI to comm
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Using network IB
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO DMA-BUF is available on GPU device 0
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ncclCommInitRank comm 0x5d64d3607680 rank 0 nranks 2 cudaDev 0 nvmlDev 6 busId ca000 commId 0x4f7f2a31f5e9c51c - Init START
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO RAS client listening socket at ::1<28028>
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO RAS client listening socket at ::1<28028>
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Bootstrap timings total 0.000575 (create 0.000026, send 0.000074, recv 0.000137, ring 0.000040, delay 0.000000)
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Bootstrap timings total 0.251359 (create 0.000029, send 0.000081, recv 0.250895, ring 0.000018, delay 0.000000)
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO MNNVL busId 0xdc000 fabric UUID 0.0 cliqueId 0x0 state 3 healthMask 0x80
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO MNNVL busId 0xca000 fabric UUID 0.0 cliqueId 0x0 state 3 healthMask 0x80
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 7 is 84-111. (GPU affinity = 84-111 ; CPU affinity = 0-111).
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO NVLS multicast support is available on dev 1 (NVLS_NCHANNELS 24)
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 6 is 84-111. (GPU affinity = 84-111 ; CPU affinity = 0-111).
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO NVLS multicast support is available on dev 0 (NVLS_NCHANNELS 24)
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO comm 0x5bfede095fc0 rank 1 nRanks 2 nNodes 1 localRanks 2 localRank 1 MNNVL 0
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO comm 0x5d64d3607680 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 00/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 01/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 02/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 03/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 04/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 05/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 06/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 07/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 08/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 09/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 10/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 11/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 12/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] -1/-1/-1->1->0 [2] -1/-1/-1->1->0 [3] -1/-1/-1->1->0 [4] -1/-1/-1->1->0 [5] -1/-1/-1->1->0 [6] -1/-1/-1->1->0 [7] -1/-1/-1->1->0 [8] 0/-1/-1->1->-1 [9] 0/-1/-1->1->-1 [10] 0/-1/-1->1->-1 [11] 0/-1/-1->1->-1 [12] 0/-1/-1->1->-1 [13] 0/-1/-1->1->-1 [14] 0/-1/-1->1->-1 [15] 0/-1/-1->1->-1 [16] -1/-1/-1->1->0 [17] -1/-1/-1->1->0 [18] -1/-1/-1->1->0 [19] -1/-1/-1->1->0 [20] -1/-1/-1->1->0 [21] -1/-1/-1->1->0 [22] -1/-1/-1->1->0 [23] -1/-1/-1->1->0 [24] 0/-1/-1->1->-1 [25] 0/-1/-1->1->-1 [26] 0/-1/-1->1->-1 [27] 0/-1/-1->1->-1 [28] 0/-1/-1->1->-1 [29] 0/-1/-1->1->-1 [30] 0/-1/-1->1->-1 [31] 0/-1/-1->1->-1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 13/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 14/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO P2P Chunksize set to 524288
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 15/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 16/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 17/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 18/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 19/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 20/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 21/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 22/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 23/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 24/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 25/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 26/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 27/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 28/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 29/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 30/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 31/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1 [8] -1/-1/-1->0->1 [9] -1/-1/-1->0->1 [10] -1/-1/-1->0->1 [11] -1/-1/-1->0->1 [12] -1/-1/-1->0->1 [13] -1/-1/-1->0->1 [14] -1/-1/-1->0->1 [15] -1/-1/-1->0->1 [16] 1/-1/-1->0->-1 [17] 1/-1/-1->0->-1 [18] 1/-1/-1->0->-1 [19] 1/-1/-1->0->-1 [20] 1/-1/-1->0->-1 [21] 1/-1/-1->0->-1 [22] 1/-1/-1->0->-1 [23] 1/-1/-1->0->-1 [24] -1/-1/-1->0->1 [25] -1/-1/-1->0->1 [26] -1/-1/-1->0->1 [27] -1/-1/-1->0->1 [28] -1/-1/-1->0->1 [29] -1/-1/-1->0->1 [30] -1/-1/-1->0->1 [31] -1/-1/-1->0->1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO P2P Chunksize set to 524288
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Check P2P Type isAllDirectP2p 1 directMode 0 isAllCudaP2p 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Check P2P Type isAllDirectP2p 1 directMode 0 isAllCudaP2p 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1371379 [0] NCCL INFO [Proxy Service] Device 1 CPU core 87
+yanqizhang-spa-dev-px9wr-master-0:1370658:1371382 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 110
+yanqizhang-spa-dev-px9wr-master-0:1370652:1371381 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 109
+yanqizhang-spa-dev-px9wr-master-0:1370652:1371380 [0] NCCL INFO [Proxy Service] Device 0 CPU core 87
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO 32 coll channels, 32 collnet channels, 24 nvls channels, 32 p2p channels, 32 p2p channels per peer
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO 32 coll channels, 32 collnet channels, 24 nvls channels, 32 p2p channels, 32 p2p channels per peer
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO CC Off, workFifoBytes 1048576
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ncclCommInitRank comm 0x5d64d3607680 rank 0 nranks 2 cudaDev 0 nvmlDev 6 busId ca000 commId 0x4f7f2a31f5e9c51c - Init COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Init timings - ncclCommInitRank: rank 0 nranks 2 total 0.89 (kernels 0.33, alloc 0.18, bootstrap 0.00, allgathers 0.00, topo 0.24, graphs 0.01, connections 0.13, rest 0.00)
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ncclCommInitRank comm 0x5bfede095fc0 rank 1 nranks 2 cudaDev 1 nvmlDev 7 busId dc000 commId 0x4f7f2a31f5e9c51c - Init COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Init timings - ncclCommInitRank: rank 1 nranks 2 total 1.12 (kernels 0.30, alloc 0.19, bootstrap 0.25, allgathers 0.00, topo 0.24, graphs 0.01, connections 0.13, rest 0.00)
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 00/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 00/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 01/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 01/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 02/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 02/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 03/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 03/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 04/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 04/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 05/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 05/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 06/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 06/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 07/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 07/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 08/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 08/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 09/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 09/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 10/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 10/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 11/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 11/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 12/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 12/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 13/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 13/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 14/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 14/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 15/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 15/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 16/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 16/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 17/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 17/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 18/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 18/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 19/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 19/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 20/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 20/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 21/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 21/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 22/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 22/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 23/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 23/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 24/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 24/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 25/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 25/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 26/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 26/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 27/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 27/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 28/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 28/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 29/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 29/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 30/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 30/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 31/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 31/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Initialized NET plugin IB
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Assigned NET plugin IB to comm
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Assigned GIN plugin GIN_IB_GDAKI to comm
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Using network IB
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO DMA-BUF is available on GPU device 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Initialized NET plugin IB
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Assigned NET plugin IB to comm
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Assigned GIN plugin GIN_IB_GDAKI to comm
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Using network IB
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO DMA-BUF is available on GPU device 0
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ncclCommInitRank comm 0x5bfee739f690 rank 1 nranks 2 cudaDev 1 nvmlDev 7 busId dc000 commId 0x8e378392ecb5fd5d - Init START
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ncclCommInitRank comm 0x5d64dc91cb60 rank 0 nranks 2 cudaDev 0 nvmlDev 6 busId ca000 commId 0x8e378392ecb5fd5d - Init START
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Bootstrap timings total 0.000368 (create 0.000019, send 0.000075, recv 0.000130, ring 0.000029, delay 0.000000)
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Bootstrap timings total 0.000346 (create 0.000019, send 0.000072, recv 0.000149, ring 0.000015, delay 0.000000)
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO MNNVL busId 0xdc000 fabric UUID 0.0 cliqueId 0x0 state 3 healthMask 0x80
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO MNNVL busId 0xca000 fabric UUID 0.0 cliqueId 0x0 state 3 healthMask 0x80
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 7 is 84-111. (GPU affinity = 84-111 ; CPU affinity = 0-111).
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO NVLS multicast support is available on dev 1 (NVLS_NCHANNELS 24)
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 6 is 84-111. (GPU affinity = 84-111 ; CPU affinity = 0-111).
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO NVLS multicast support is available on dev 0 (NVLS_NCHANNELS 24)
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO comm 0x5bfee739f690 rank 1 nRanks 2 nNodes 1 localRanks 2 localRank 1 MNNVL 0
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO comm 0x5d64dc91cb60 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 00/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 01/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 02/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 03/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 04/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 05/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 06/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 07/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 08/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 09/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 10/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 11/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 12/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 13/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 14/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 15/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] -1/-1/-1->1->0 [2] -1/-1/-1->1->0 [3] -1/-1/-1->1->0 [4] -1/-1/-1->1->0 [5] -1/-1/-1->1->0 [6] -1/-1/-1->1->0 [7] -1/-1/-1->1->0 [8] 0/-1/-1->1->-1 [9] 0/-1/-1->1->-1 [10] 0/-1/-1->1->-1 [11] 0/-1/-1->1->-1 [12] 0/-1/-1->1->-1 [13] 0/-1/-1->1->-1 [14] 0/-1/-1->1->-1 [15] 0/-1/-1->1->-1 [16] -1/-1/-1->1->0 [17] -1/-1/-1->1->0 [18] -1/-1/-1->1->0 [19] -1/-1/-1->1->0 [20] -1/-1/-1->1->0 [21] -1/-1/-1->1->0 [22] -1/-1/-1->1->0 [23] -1/-1/-1->1->0 [24] 0/-1/-1->1->-1 [25] 0/-1/-1->1->-1 [26] 0/-1/-1->1->-1 [27] 0/-1/-1->1->-1 [28] 0/-1/-1->1->-1 [29] 0/-1/-1->1->-1 [30] 0/-1/-1->1->-1 [31] 0/-1/-1->1->-1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 16/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO P2P Chunksize set to 524288
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 17/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 18/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 19/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Check P2P Type isAllDirectP2p 1 directMode 0 isAllCudaP2p 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 20/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 21/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 22/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 23/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 24/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 25/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 26/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 27/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 28/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 29/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 30/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 31/32 : 0 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1 [8] -1/-1/-1->0->1 [9] -1/-1/-1->0->1 [10] -1/-1/-1->0->1 [11] -1/-1/-1->0->1 [12] -1/-1/-1->0->1 [13] -1/-1/-1->0->1 [14] -1/-1/-1->0->1 [15] -1/-1/-1->0->1 [16] 1/-1/-1->0->-1 [17] 1/-1/-1->0->-1 [18] 1/-1/-1->0->-1 [19] 1/-1/-1->0->-1 [20] 1/-1/-1->0->-1 [21] 1/-1/-1->0->-1 [22] 1/-1/-1->0->-1 [23] 1/-1/-1->0->-1 [24] -1/-1/-1->0->1 [25] -1/-1/-1->0->1 [26] -1/-1/-1->0->1 [27] -1/-1/-1->0->1 [28] -1/-1/-1->0->1 [29] -1/-1/-1->0->1 [30] -1/-1/-1->0->1 [31] -1/-1/-1->0->1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO P2P Chunksize set to 524288
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Check P2P Type isAllDirectP2p 1 directMode 0 isAllCudaP2p 1
+yanqizhang-spa-dev-px9wr-master-0:1370658:1371413 [0] NCCL INFO [Proxy Service] Device 1 CPU core 87
+yanqizhang-spa-dev-px9wr-master-0:1370658:1371415 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 88
+yanqizhang-spa-dev-px9wr-master-0:1370652:1371414 [0] NCCL INFO [Proxy Service] Device 0 CPU core 88
+yanqizhang-spa-dev-px9wr-master-0:1370652:1371416 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 89
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO 32 coll channels, 32 collnet channels, 24 nvls channels, 32 p2p channels, 32 p2p channels per peer
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO 32 coll channels, 32 collnet channels, 24 nvls channels, 32 p2p channels, 32 p2p channels per peer
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO CC Off, workFifoBytes 1048576
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ncclCommInitRank comm 0x5bfee739f690 rank 1 nranks 2 cudaDev 1 nvmlDev 7 busId dc000 commId 0x8e378392ecb5fd5d - Init COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Init timings - ncclCommInitRank: rank 1 nranks 2 total 0.31 (kernels 0.00, alloc 0.00, bootstrap 0.00, allgathers 0.00, topo 0.20, graphs 0.01, connections 0.09, rest 0.00)
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ncclCommInitRank comm 0x5d64dc91cb60 rank 0 nranks 2 cudaDev 0 nvmlDev 6 busId ca000 commId 0x8e378392ecb5fd5d - Init COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Init timings - ncclCommInitRank: rank 0 nranks 2 total 0.31 (kernels 0.00, alloc 0.00, bootstrap 0.00, allgathers 0.00, topo 0.20, graphs 0.01, connections 0.09, rest 0.00)
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 00/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 01/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 02/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 03/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 00/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 04/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 01/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 05/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 02/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 06/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 03/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 07/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 04/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 08/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 05/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 09/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 06/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 10/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 07/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 11/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 08/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 12/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 09/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 13/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 10/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 14/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 11/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 15/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 12/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 16/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 13/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 17/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 14/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 15/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 18/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 16/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 19/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 17/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 20/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 18/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 21/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 19/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 22/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 20/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 23/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 21/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 24/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 22/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 25/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 23/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 26/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 24/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 27/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 25/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 28/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 26/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 29/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 27/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 30/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 28/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Channel 31/0 : 0[6] -> 1[7] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 29/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 30/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Channel 31/0 : 1[7] -> 0[6] via P2P/CUMEM
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+(Worker pid=1370652) INFO 05-28 00:59:21 [cuda_communicator.py:171] Using AgRsAll2AllManager all2all manager.
+(Worker pid=1370652) INFO 05-28 00:59:21 [parallel_state.py:1715] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank 0, EPLB rank N/A
+(Worker_DP1_EP1 pid=1370658) INFO 05-28 00:59:23 [cuda.py:308] Using AttentionBackendEnum.FLASHINFER backend.
+(Worker_DP1_EP1 pid=1370658) INFO 05-28 00:59:23 [selector.py:136] Using HND KV cache layout for FLASHINFER backend.
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:23 [gpu_model_runner.py:4792] Starting to load model Qwen/Qwen3-30B-A3B-Instruct-2507...
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:23 [cuda.py:308] Using AttentionBackendEnum.FLASHINFER backend.
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:23 [selector.py:136] Using HND KV cache layout for FLASHINFER backend.
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:24 [layer.py:408] [EP Rank 0/2] Expert parallelism is enabled. Expert placement strategy: linear. Local/global number of experts: 64/128. Experts local to global index map: 0->0, 1->1, 2->2, 3->3, 4->4, 5->5, 6->6, 7->7, 8->8, 9->9, 10->10, 11->11, 12->12, 13->13, 14->14, 15->15, 16->16, 17->17, 18->18, 19->19, 20->20, 21->21, 22->22, 23->23, 24->24, 25->25, 26->26, 27->27, 28->28, 29->29, 30->30, 31->31, 32->32, 33->33, 34->34, 35->35, 36->36, 37->37, 38->38, 39->39, 40->40, 41->41, 42->42, 43->43, 44->44, 45->45, 46->46, 47->47, 48->48, 49->49, 50->50, 51->51, 52->52, 53->53, 54->54, 55->55, 56->56, 57->57, 58->58, 59->59, 60->60, 61->61, 62->62, 63->63.
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:24 [unquantized.py:213] Using TRITON Unquantized MoE backend out of potential backends: ['FlashInfer TRTLLM', 'TRITON', 'BATCHED_TRITON', 'FlashInfer CUTLASS'].
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:24 [weight_utils.py:904] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 56.87 GiB. Available RAM: 2874.46 GiB.
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:24 [weight_utils.py:927] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:   0% Completed | 0/16 [00:00<?, ?it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:   6% Completed | 1/16 [00:00<00:08,  1.77it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  12% Completed | 2/16 [00:01<00:07,  1.89it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  19% Completed | 3/16 [00:01<00:06,  1.90it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  25% Completed | 4/16 [00:02<00:06,  1.76it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  31% Completed | 5/16 [00:02<00:06,  1.62it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  38% Completed | 6/16 [00:03<00:06,  1.58it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  44% Completed | 7/16 [00:04<00:05,  1.62it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  50% Completed | 8/16 [00:04<00:04,  1.63it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  56% Completed | 9/16 [00:05<00:04,  1.71it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  62% Completed | 10/16 [00:05<00:03,  1.71it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  69% Completed | 11/16 [00:06<00:02,  1.80it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  75% Completed | 12/16 [00:06<00:02,  1.79it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  81% Completed | 13/16 [00:07<00:01,  1.76it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  88% Completed | 14/16 [00:08<00:01,  1.74it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards:  94% Completed | 15/16 [00:08<00:00,  1.74it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards: 100% Completed | 16/16 [00:08<00:00,  2.20it/s]
+(Worker_DP0_EP0 pid=1370652) Loading safetensors checkpoint shards: 100% Completed | 16/16 [00:08<00:00,  1.80it/s]
+(Worker_DP0_EP0 pid=1370652) 
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:33 [default_loader.py:384] Loading weights took 8.90 seconds
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:33 [unquantized.py:343] Using MoEPrepareAndFinalizeNaiveDPEPModular
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:34 [gpu_model_runner.py:4894] Model loading took 29.93 GiB memory and 9.787815 seconds
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:34 [dp_utils.py:28] Using CPU all reduce to synchronize DP padding between ranks.
+(Worker_DP0_EP0 pid=1370652) [moe_a2a_profiler] enabled, pid=1370652 backend=allgather_reducescatter dp=2 ep=True pcp=1
+(Worker_DP1_EP1 pid=1370658) [moe_a2a_profiler] enabled, pid=1370658 backend=allgather_reducescatter dp=2 ep=True pcp=1
+(Worker_DP0_EP0 pid=1370652) WARNING 05-28 00:59:34 [fused_moe.py:1091] Using default MoE config. Performance might be sub-optimal! Config file not found at /data/zihan/projects/vllm-nvlink/vllm/model_executor/layers/fused_moe/configs/E=64,N=768,device_name=NVIDIA_B200.json
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:35 [gpu_worker.py:440] Available KV cache memory: 118.95 GiB
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:35 [kv_cache_utils.py:1711] GPU KV cache size: 1,299,280 tokens
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:35 [kv_cache_utils.py:1716] Maximum concurrency for 262,144 tokens per request: 4.96x
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:35 [kv_cache_utils.py:1711] GPU KV cache size: 1,299,280 tokens
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:35 [kv_cache_utils.py:1716] Maximum concurrency for 262,144 tokens per request: 4.96x
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:35 [utils.py:60] `_KV_CACHE_LAYOUT_OVERRIDE` variable detected. Setting KV cache layout to HND.
+(Worker_DP0_EP0 pid=1370652) 2026-05-28 00:59:36,122 - INFO - autotuner.py:457 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(Worker_DP1_EP1 pid=1370658) 2026-05-28 00:59:36,323 - INFO - autotuner.py:457 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(Worker_DP0_EP0 pid=1370652) 2026-05-28 00:59:36,627 - INFO - autotuner.py:466 - flashinfer.jit: [Autotuner]: Autotuning process ends
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 00:59:36 [kernel_warmup.py:69] Warming up FlashInfer attention.
+(Worker_DP1_EP1 pid=1370658) 2026-05-28 00:59:36,628 - INFO - autotuner.py:466 - flashinfer.jit: [Autotuner]: Autotuning process ends
+(Worker_DP1_EP1 pid=1370658) INFO 05-28 00:59:36 [kernel_warmup.py:69] Warming up FlashInfer attention.
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:37 [core.py:306] init engine (profile, create kv cache, warmup model) took 3.26 s
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:37 [core.py:306] init engine (profile, create kv cache, warmup model) took 3.75 s
+(EngineCore_DP0 pid=1370330) Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+(EngineCore_DP1 pid=1370331) Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:44 [nixl_utils.py:20] Setting UCX_RCACHE_MAX_UNRELEASED to '1024' to avoid a rare memory leak in UCX when using NIXL.
+(EngineCore_DP1 pid=1370331) WARNING 05-28 00:59:44 [nixl_utils.py:34] NIXL is not available
+(EngineCore_DP1 pid=1370331) WARNING 05-28 00:59:44 [nixl_utils.py:44] NIXL agent config is not available
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:44 [nixl_utils.py:20] Setting UCX_RCACHE_MAX_UNRELEASED to '1024' to avoid a rare memory leak in UCX when using NIXL.
+(EngineCore_DP0 pid=1370330) WARNING 05-28 00:59:44 [nixl_utils.py:34] NIXL is not available
+(EngineCore_DP0 pid=1370330) WARNING 05-28 00:59:44 [nixl_utils.py:44] NIXL agent config is not available
+INFO 05-28 00:59:45 [coordinator.py:255] All engine subscriptions received by DP coordinator
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:45 [vllm.py:840] Asynchronous scheduling is enabled.
+(EngineCore_DP0 pid=1370330) WARNING 05-28 00:59:45 [vllm.py:896] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(EngineCore_DP0 pid=1370330) WARNING 05-28 00:59:45 [vllm.py:914] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:45 [vllm.py:840] Asynchronous scheduling is enabled.
+(EngineCore_DP1 pid=1370331) WARNING 05-28 00:59:45 [vllm.py:896] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(EngineCore_DP1 pid=1370331) WARNING 05-28 00:59:45 [vllm.py:914] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:45 [kernel.py:205] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'])
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:45 [vllm.py:1089] Cudagraph is disabled under eager mode
+(EngineCore_DP0 pid=1370330) INFO 05-28 00:59:45 [compilation.py:303] Enabled custom fusions: norm_quant, act_quant
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:45 [kernel.py:205] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'])
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:45 [vllm.py:1089] Cudagraph is disabled under eager mode
+(EngineCore_DP1 pid=1370331) INFO 05-28 00:59:45 [compilation.py:303] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=1369635) INFO 05-28 00:59:45 [api_server.py:598] Supported tasks: ['generate']
+(APIServer pid=1369635) WARNING 05-28 00:59:46 [model.py:1437] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'temperature': 0.7, 'top_k': 20, 'top_p': 0.8}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=1369635) INFO 05-28 00:59:48 [hf.py:314] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=1369635) INFO 05-28 00:59:48 [api_server.py:602] Starting vLLM server on http://0.0.0.0:8000
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:37] Available routes are:
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /openapi.json, Methods: HEAD, GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /docs, Methods: HEAD, GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /docs/oauth2-redirect, Methods: HEAD, GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /redoc, Methods: HEAD, GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /tokenize, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /detokenize, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /load, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /version, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /health, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /metrics, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/models, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /ping, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /ping, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /invocations, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/responses, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/completions, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/messages, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /inference/v1/generate, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /generative_scoring, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/chat/completions/render, Methods: POST
+(APIServer pid=1369635) INFO 05-28 00:59:48 [launcher.py:46] Route: /v1/completions/render, Methods: POST
+(APIServer pid=1369635) INFO:     Started server process [1369635]
+(APIServer pid=1369635) INFO:     Waiting for application startup.
+(APIServer pid=1369635) INFO:     Application startup complete.
+(APIServer pid=1369635) INFO:     127.0.0.1:58934 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:58938 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:58952 - "HEAD /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:58954 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34720 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34730 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34742 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34746 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34748 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34756 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34772 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34778 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34788 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34798 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34814 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34820 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34826 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34852 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34862 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34876 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34892 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34902 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34914 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34920 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34936 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34942 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34950 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34954 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34964 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34970 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34984 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34988 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34994 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35000 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35016 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35024 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35036 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35044 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35058 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35060 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35076 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35092 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35104 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35112 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35120 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35122 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35134 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35138 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35152 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35162 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35164 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35172 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35178 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35182 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35196 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35212 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35226 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35236 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35238 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35246 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35254 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35260 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35270 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35280 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35290 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35304 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35308 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35312 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35320 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35328 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35340 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35348 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35362 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35368 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35384 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35390 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35392 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35408 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35412 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35416 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35432 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35442 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35450 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35462 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35472 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35476 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35480 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35488 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35496 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35510 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35524 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35538 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35552 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35564 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35576 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35586 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35602 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35610 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35616 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35104 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35628 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35644 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35660 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35664 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35668 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35670 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35676 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35678 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35690 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35698 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35702 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35714 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35716 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35724 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35732 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35738 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35742 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35752 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35760 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35774 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35786 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35794 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35810 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35824 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35832 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35834 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35836 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35838 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35852 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35860 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35870 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35872 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35876 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35892 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35900 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35904 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35920 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35924 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35926 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35936 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35948 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35962 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35964 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35972 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35984 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35994 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36006 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36010 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36026 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36030 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36036 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36050 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36056 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36058 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36066 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36080 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36082 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36092 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36106 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36116 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36124 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36132 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36148 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36156 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36166 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36174 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36198 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36206 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36222 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36230 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34696 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34698 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34710 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34712 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34716 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34732 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34740 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34744 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34752 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34760 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34774 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34784 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34790 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34792 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34794 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34796 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34806 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34816 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34824 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34836 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34846 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34848 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34878 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34882 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34898 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34900 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34908 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34924 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34930 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34944 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34952 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34956 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34958 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34968 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34980 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34982 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34996 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35004 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35018 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35028 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35038 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35046 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35056 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35062 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35070 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35082 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35094 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35106 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35108 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35124 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35126 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35136 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35148 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35166 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35168 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35170 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35174 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35186 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35936 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35192 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35198 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35200 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35962 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35206 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35220 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35230 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35240 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35244 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35252 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35256 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35266 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35272 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35282 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35292 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35296 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35310 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35324 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35326 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35330 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35334 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35336 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35338 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35352 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35356 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35366 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35372 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35386 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35388 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35396 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35402 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35418 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35420 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35436 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35440 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35456 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35070 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35464 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35470 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35484 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35486 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35498 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35504 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35520 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35534 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35540 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35542 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35544 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35546 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35562 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35568 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34778 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35572 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35578 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35582 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35592 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35594 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35604 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35614 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35618 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35630 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35646 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35656 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35662 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35672 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35680 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35692 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35704 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35720 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35726 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35744 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35746 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35754 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35766 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35776 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35780 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35788 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35792 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35806 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35814 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35822 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35840 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35848 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35864 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35868 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35886 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35894 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35910 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34772 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35534 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35914 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35928 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35944 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35954 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35960 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35966 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35982 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35996 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36008 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34774 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36012 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36020 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36028 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36032 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36046 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36054 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36070 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36076 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36084 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36094 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36098 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36112 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36122 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36128 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36142 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36144 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36150 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36738 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36754 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36762 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36776 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36784 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36796 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36812 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36830 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36846 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36874 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36878 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36888 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36896 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36908 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36912 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36924 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36936 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36946 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36954 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36958 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36970 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36984 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36998 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37012 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37020 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37034 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37050 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37054 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37066 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37082 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37092 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35388 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37096 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37102 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37118 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37122 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37136 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35016 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37148 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37160 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37174 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37190 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37200 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37216 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37220 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37230 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37242 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37248 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37252 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37258 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37268 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37282 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37290 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37306 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37312 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37316 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37330 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37334 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37346 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37348 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37362 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37364 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37380 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37388 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37400 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37408 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37416 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37432 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37444 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37458 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37466 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37468 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37480 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37482 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37492 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37502 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37516 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37528 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37534 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37548 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37558 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37572 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37574 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37578 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37586 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37598 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37608 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37624 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37636 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37640 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37646 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37648 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37652 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37660 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37670 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37672 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37682 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37688 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37700 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37704 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37714 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37730 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37732 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37744 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37760 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:36970 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37762 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37772 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37780 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37796 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37248 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37826 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37840 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:35388 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37856 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37872 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37892 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37896 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37898 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37912 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37920 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37930 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37942 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37956 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37964 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37200 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37978 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37984 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:37996 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38006 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38008 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38020 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38024 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38038 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38048 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:38056 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     127.0.0.1:34706 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=1369635) INFO:     Shutting down
+(EngineCore_DP1 pid=1370331) INFO 05-28 01:04:30 [core.py:1238] Shutdown initiated (timeout=0)
+(EngineCore_DP0 pid=1370330) INFO 05-28 01:04:30 [core.py:1238] Shutdown initiated (timeout=0)
+(APIServer pid=1369635) INFO:     Waiting for application shutdown.
+(APIServer pid=1369635) INFO:     Application shutdown complete.
+(APIServer pid=1369635) INFO:     Finished server process [1369635]
+(EngineCore_DP1 pid=1370331) INFO 05-28 01:04:33 [core.py:1261] Shutdown complete
+(EngineCore_DP0 pid=1370330) INFO 05-28 01:04:33 [core.py:1261] Shutdown complete
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 01:04:33 [multiproc_executor.py:775] Parent process exited, terminating worker queues
+(Worker_DP0_EP0 pid=1370652) INFO 05-28 01:04:33 [multiproc_executor.py:872] WorkerProc shutting down.
+(Worker_DP1_EP1 pid=1370658) INFO 05-28 01:04:33 [multiproc_executor.py:872] WorkerProc shutting down.
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO comm 0x5bfede095fc0 rank 1 nranks 2 cudaDev 1 busId dc000 - Destroy COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO comm 0x5d64d3607680 rank 0 nranks 2 cudaDev 0 busId ca000 - Destroy COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO comm 0x5bfee739f690 rank 1 nranks 2 cudaDev 1 busId dc000 - Destroy COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO comm 0x5d64dc91cb60 rank 0 nranks 2 cudaDev 0 busId ca000 - Destroy COMPLETE
+yanqizhang-spa-dev-px9wr-master-0:1370652:1370652 [0] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+yanqizhang-spa-dev-px9wr-master-0:1370658:1370658 [1] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+/root/miniconda3/envs/vllm-nvlink/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 2 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

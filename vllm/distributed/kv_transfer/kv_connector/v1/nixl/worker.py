@@ -30,6 +30,7 @@ from vllm.distributed.kv_transfer.kv_connector.utils import (
 )
 from vllm.distributed.kv_transfer.kv_connector.v1.base import CopyBlocksOp
 from vllm.distributed.kv_transfer.kv_connector.v1.metrics import KVConnectorStats
+from vllm.distributed.kv_transfer.kv_connector.v1.nixl import _trace as _pd_trace
 from vllm.distributed.kv_transfer.kv_connector.v1.nixl.metadata import (
     GET_META_MSG,
     NixlAgentMetadata,
@@ -292,6 +293,23 @@ class NixlConnectorWorker:
 
         # Handshake metadata of this worker for NIXL transfers.
         self.xfer_handshake_metadata: NixlHandshakePayload | None = None
+        # Optional JSONL trace writer for the playground P/D-disagg + EP
+        # experiments (env-gated via VLLM_PD_TRACE_DIR; see _trace.py).
+        # All trace calls are no-ops when the env var is unset.
+        _kv_role = (
+            self.kv_transfer_config.kv_role
+            if self.kv_transfer_config is not None
+            else None
+        )
+        # Normalize kv_producer -> "prefill", kv_consumer -> "decode";
+        # any other / missing value falls back to "engine".
+        _role_map = {"kv_producer": "prefill", "kv_consumer": "decode"}
+        _role = _role_map.get(str(_kv_role) if _kv_role else "", "engine")
+        self._pd_trace = _pd_trace.get_writer(
+            role=_role,
+            dp_rank=int(vllm_config.parallel_config.data_parallel_rank),
+            tp_rank=int(self.tp_rank),
+        )
         # Background thread for initializing new NIXL handshakes.
         self._handshake_initiation_executor = ThreadPoolExecutor(
             # NIXL is not guaranteed to be thread-safe, limit 1 worker.
@@ -1817,6 +1835,15 @@ class NixlConnectorWorker:
                 # Only report request as completed when all transfers are done.
                 done_req_ids.add(req_id)
                 del transfers[req_id]
+                # Trace: closes the [recv_start, recv_done] interval for this
+                # request. Fires once per req_id, when *all* of its NIXL handles
+                # have transitioned to DONE (matching the connector's own
+                # completion semantics). Failed transfers go through
+                # `_handle_failed_transfer` and intentionally do not emit a
+                # recv_done event -- the timeseries plotter treats unmatched
+                # recv_start events as "still in flight at end of trace".
+                if self._pd_trace is not None:
+                    self._pd_trace.recv_done(req_id=req_id)
             else:
                 transfers[req_id] = in_progress
         return done_req_ids
@@ -2107,6 +2134,23 @@ class NixlConnectorWorker:
 
             # Use handle to check completion in future step().
             self._recving_transfers[request_id].append(handle)
+            # Trace: this consumer just kicked off an async READ over NIXL/UCX
+            # for `request_id` against `dst_engine_id`/`remote_rank`. Recorded
+            # here so the wall-clock interval [recv_start, recv_done] in the
+            # JSONL covers the actual data movement; runs outside the captured
+            # forward, so CUDA graphs are unaffected.
+            if self._pd_trace is not None:
+                self._pd_trace.recv_start(
+                    req_id=request_id,
+                    dst_engine_id=dst_engine_id,
+                    remote_rank=remote_rank,
+                    n_local_blocks=(
+                        sum(len(b) for b in local_block_ids)
+                        if local_block_ids
+                        and isinstance(local_block_ids[0], (list, tuple))
+                        else len(local_block_ids)
+                    ),
+                )
         except Exception as e:
             # mark all (logical) blocks for this request as invalid
             self._log_failure(

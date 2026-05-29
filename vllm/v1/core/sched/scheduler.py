@@ -141,6 +141,32 @@ class Scheduler(SchedulerInterface):
             self.kv_events_config,
             self.parallel_config.data_parallel_index,
         )
+        # Optional JSONL trace writer for per-step token emissions, used by
+        # the playground/moe_pd P/D-disagg + EP experiments. Off by default;
+        # enabled by setting VLLM_PD_TRACE_DIR. Lives in the engine-core
+        # process (one per DP rank), strictly between forwards. See
+        # vllm/distributed/kv_transfer/kv_connector/v1/nixl/_trace.py.
+        self._pd_trace = None
+        try:
+            from vllm.distributed.kv_transfer.kv_connector.v1.nixl import (
+                _trace as _pd_trace_mod,
+            )
+
+            _role = "engine"
+            if self.vllm_config.kv_transfer_config is not None:
+                _role_map = {"kv_producer": "prefill", "kv_consumer": "decode"}
+                _role = _role_map.get(
+                    self.vllm_config.kv_transfer_config.kv_role or "engine",
+                    self.vllm_config.kv_transfer_config.kv_role or "engine",
+                )
+            self._pd_trace = _pd_trace_mod.get_writer(
+                role=_role,
+                dp_rank=int(self.parallel_config.data_parallel_rank),
+                tp_rank=0,
+            )
+        except Exception:
+            # Tracing is best-effort; never block scheduler startup on it.
+            self._pd_trace = None
         self.ec_connector = None
         if self.vllm_config.ec_transfer_config is not None:
             self.ec_connector = ECConnectorFactory.create_connector(
@@ -1314,6 +1340,24 @@ class Scheduler(SchedulerInterface):
         kv_connector_output = model_runner_output.kv_connector_output
         cudagraph_stats = model_runner_output.cudagraph_stats
 
+        # P/D-trace: emit a per-step token-emission record. Engine-core lives
+        # strictly between forwards, so the call is CUDA-graph-safe.
+        # `sampled_token_ids[i]` is the list of new tokens for `req_ids[i]`
+        # this step (post-CPU sync from the model runner). We log only
+        # requests that actually received >=1 token to keep lines compact.
+        if self._pd_trace is not None and sampled_token_ids:
+            _req_ids = model_runner_output.req_ids
+            _emit_tokens: list[tuple[str, int]] = []
+            for _i, _rid in enumerate(_req_ids):
+                _n = len(sampled_token_ids[_i]) if _i < len(sampled_token_ids) else 0
+                if _n > 0:
+                    _emit_tokens.append((_rid, _n))
+            if _emit_tokens:
+                self._pd_trace.step(
+                    tokens=_emit_tokens,
+                    num_scheduled=sum(num_scheduled_tokens.values()),
+                )
+
         perf_stats: PerfStats | None = None
         if self.perf_metrics and self.perf_metrics.is_enabled():
             perf_stats = self.perf_metrics.get_step_perf_stats_per_gpu(scheduler_output)
@@ -1560,6 +1604,22 @@ class Scheduler(SchedulerInterface):
                 # outputs this step.
                 engine_core_outputs[0] = eco = EngineCoreOutputs()
             eco.scheduler_stats = stats
+
+        # P/D trace: post-step bookkeeping summary. Pairs with the `step`
+        # event emitted at the top of this method; together they let the
+        # plotter attribute ITL spikes to EOS clumps (n_finished>0),
+        # KV-recv completion bookkeeping (n_recv_done>0), or "other"
+        # (both zero -> probably DP sync / allocator / GC).
+        if self._pd_trace is not None:
+            _n_recv_done = (
+                len(kv_connector_output.finished_recving)
+                if kv_connector_output and kv_connector_output.finished_recving
+                else 0
+            )
+            self._pd_trace.step_done(
+                n_finished=len(stopped_running_reqs) + len(stopped_preempted_reqs),
+                n_recv_done=_n_recv_done,
+            )
 
         return engine_core_outputs
 

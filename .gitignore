@@ -258,3 +258,8 @@ playground/out/aiperf/
 
 # ... except aiperf raw output, which is too large to track in-repo.
 playground/out/aiperf/
+
+playground/out/log/
+
+.sqlite
+.nsys-rep

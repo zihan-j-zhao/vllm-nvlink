@@ -21,7 +21,7 @@ Activation:
 
 File layout: one JSONL file per process under $VLLM_PD_TRACE_DIR, named
   role=<prefill|decode|engine>_dp=<i>_tp=<j>_pid=<pid>[_label=<L>].jsonl
-Each line is one JSON object; see TraceWriter.recv_start/recv_done/step.
+Each line is one JSON object; see TraceWriter.recv_start/recv_done/step/event.
 
 Origin clock is `time.perf_counter()` (process-monotonic). On startup we also
 write a `boot` event that records `time.time()` and `perf_counter()` together
@@ -139,6 +139,17 @@ class TraceWriter:
             "n_recv_done": int(n_recv_done),
         })
 
+    def event(self, ev: str, **fields: Any) -> None:
+        """Emit a generic CPU wall-clock event.
+
+        This is intentionally tiny and CUDA-graph safe. It is used for
+        high-level overlap attribution around model forward and KV connector
+        lifecycle calls, not for exact GPU kernel timing.
+        """
+        obj = {"ev": ev, "ts": time.perf_counter()}
+        obj.update(fields)
+        self._emit(obj)
+
     # ---------------- internals ----------------
 
     def _emit(self, obj: Any) -> None:
@@ -197,4 +208,16 @@ def get_writer(role: str, dp_rank: int, tp_rank: int = 0) -> "TraceWriter | None
             f"role={role}_dp={dp_rank}_tp={tp_rank}_pid={os.getpid()}{suffix}.jsonl"
         )
         _writer = TraceWriter(os.path.join(d, fname))
+    return _writer  # type: ignore[return-value]
+
+
+def get_current_writer() -> "TraceWriter | None":
+    """Return the existing process writer without creating one.
+
+    Worker-side call sites use this after the NIXL connector has initialized
+    the role-specific writer. Returning None when no writer exists keeps generic
+    tracing out of non-P/D or non-NIXL paths.
+    """
+    if _writer is _DISABLED_SENTINEL:
+        return None
     return _writer  # type: ignore[return-value]

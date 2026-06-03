@@ -5,6 +5,7 @@ Define KV connector functionality mixin for model runners.
 """
 
 import copy
+import os
 from collections.abc import Generator
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from typing import TYPE_CHECKING
@@ -95,20 +96,79 @@ class KVConnectorModelRunnerMixin:
         assert scheduler_output.kv_connector_metadata is not None
         kv_connector.bind_connector_metadata(scheduler_output.kv_connector_metadata)
 
+        pd_trace = None
+        try:
+            from vllm.distributed.kv_transfer.kv_connector.v1.nixl import (
+                _trace as _pd_trace_mod,
+            )
+
+            pd_trace = _pd_trace_mod.get_current_writer()
+        except Exception:
+            pd_trace = None
+
+        meta = scheduler_output.kv_connector_metadata
+        if pd_trace is not None:
+            fields = {
+                "n_recv": len(getattr(meta, "reqs_to_recv", {})),
+                "n_send": len(getattr(meta, "reqs_to_send", {})),
+                "n_in_batch": len(getattr(meta, "reqs_in_batch", set())),
+            }
+            if os.environ.get("VLLM_PD_TRACE_REQ_IDS", "0").lower() in (
+                "1",
+                "true",
+                "yes",
+                "on",
+            ):
+                fields.update(
+                    reqs_to_recv=sorted(map(str, getattr(meta, "reqs_to_recv", {}).keys())),
+                    reqs_to_send=sorted(map(str, getattr(meta, "reqs_to_send", {}).keys())),
+                    reqs_in_batch=sorted(map(str, getattr(meta, "reqs_in_batch", set()))),
+                )
+            pd_trace.event("kv_start_load_begin", **fields)
+
         # Background KV cache transfers happen here.
         # These transfers are designed to be async and the requests
         # involved may be disjoint from the running requests.
         # Do this here to save a collective_rpc.
         kv_connector.start_load_kv(get_forward_context())
+        if pd_trace is not None:
+            pd_trace.event("kv_start_load_done")
         try:
             yield output
         finally:
+            if pd_trace is not None:
+                pd_trace.event("kv_finalize_begin")
             if wait_for_save and not defer_finalize:
+                if pd_trace is not None:
+                    pd_trace.event("kv_wait_for_save_begin")
                 kv_connector.wait_for_save()
+                if pd_trace is not None:
+                    pd_trace.event("kv_wait_for_save_done")
 
+            if pd_trace is not None:
+                pd_trace.event("kv_get_finished_begin")
             output.finished_sending, output.finished_recving = (
                 kv_connector.get_finished(scheduler_output.finished_req_ids)
             )
+            if pd_trace is not None:
+                fields = {
+                    "n_finished_sending": len(output.finished_sending),
+                    "n_finished_recving": len(output.finished_recving),
+                }
+                if os.environ.get("VLLM_PD_TRACE_REQ_IDS", "0").lower() in (
+                    "1",
+                    "true",
+                    "yes",
+                    "on",
+                ):
+                    fields.update(
+                        finished_sending=sorted(map(str, output.finished_sending)),
+                        finished_recving=sorted(map(str, output.finished_recving)),
+                    )
+                pd_trace.event(
+                    "kv_get_finished_done",
+                    **fields,
+                )
             output.invalid_block_ids = kv_connector.get_block_ids_with_load_errors()
 
             output.kv_connector_stats = kv_connector.get_kv_connector_stats()
@@ -117,6 +177,8 @@ class KVConnectorModelRunnerMixin:
 
             if not defer_finalize:
                 kv_connector.clear_connector_metadata()
+            if pd_trace is not None:
+                pd_trace.event("kv_finalize_done")
 
     @staticmethod
     def use_uniform_kv_cache(

@@ -4,6 +4,7 @@
 import functools
 import gc
 import itertools
+import os
 import threading
 import time
 from collections import defaultdict
@@ -435,6 +436,16 @@ class GPUModelRunner(
         # Prevents routed experts code from running during profiling/dummy run.
         self.routed_experts_initialized = False
         self.max_model_len = model_config.max_model_len
+        self._nsys_decode_forward_capture_limit = int(
+            os.environ.get("VLLM_NSYS_CAPTURE_DECODE_FORWARD_STEPS", "0") or "0"
+        )
+        self._nsys_decode_forward_capture_count = 0
+        self._nsys_decode_forward_capture_active = False
+        self._nsys_decode_forward_capture_done = False
+        self._nsys_forward_nvtx_enabled = os.environ.get(
+            "VLLM_NSYS_FORWARD_NVTX", "0"
+        ).lower() in ("1", "true", "yes", "on")
+        self._nsys_forward_nvtx_counts: defaultdict[str, int] = defaultdict(int)
 
         # Always set to false after the first forward pass
         self.calculate_kv_scales = self.cache_config.calculate_kv_scales
@@ -857,6 +868,46 @@ class GPUModelRunner(
         self.mamba_state_idx: dict[str, int] = {}
         self._mamba_copy_bufs: mamba_utils.MambaCopyBuffers | None = None
         self.layerwise_nvtx_hooks_registered = False
+        self._pd_trace_forward_cuda_events_enabled = os.environ.get(
+            "VLLM_PD_TRACE_FORWARD_CUDA_EVENTS", "0"
+        ).lower() in ("1", "true", "yes", "on")
+        self._pd_trace_forward_cuda_event_delay = int(
+            os.environ.get("VLLM_PD_TRACE_FORWARD_CUDA_EVENT_DELAY", "16") or "16"
+        )
+        self._pd_trace_forward_cuda_pending: list[dict[str, Any]] = []
+        self._pd_trace_forward_cuda_seq = 0
+
+    def _drain_pd_trace_forward_cuda_events(self, pd_trace: Any | None) -> None:
+        if pd_trace is None or not self._pd_trace_forward_cuda_events_enabled:
+            return
+        keep: list[dict[str, Any]] = []
+        for item in self._pd_trace_forward_cuda_pending:
+            end_event = item["end_event"]
+            try:
+                ready = bool(end_event.query())
+            except Exception:
+                ready = False
+            if not ready:
+                keep.append(item)
+                continue
+            try:
+                gpu_ms = float(item["start_event"].elapsed_time(end_event))
+                fields = dict(item["fields"])
+                fields.update(
+                    {
+                        "gpu_ms": gpu_ms,
+                        "duration_ms": gpu_ms,
+                        "start": float(item["cpu_start_ts"]),
+                        "end": float(item["cpu_start_ts"]) + gpu_ms / 1000.0,
+                        "cpu_start_ts": float(item["cpu_start_ts"]),
+                        "cpu_end_ts": float(item["cpu_end_ts"]),
+                        "seq": int(item["seq"]),
+                    }
+                )
+                pd_trace.event("forward_gpu_timing", **fields)
+            except Exception:
+                pass
+        self._pd_trace_forward_cuda_pending = keep
 
     def update_max_model_len(self, max_model_len: int) -> None:
         self.max_model_len = max_model_len
@@ -4063,13 +4114,157 @@ class GPUModelRunner(
                 defer_finalize=defer_kv_connector_finalize,
             ) as kv_connector_output,
         ):
-            model_output = self._model_forward(
-                input_ids=input_ids,
-                positions=positions,
-                intermediate_tensors=intermediate_tensors,
-                inputs_embeds=inputs_embeds,
-                **model_kwargs,
-            )
+            pd_trace = None
+            try:
+                from vllm.distributed.kv_transfer.kv_connector.v1.nixl import (
+                    _trace as _pd_trace_mod,
+                )
+
+                pd_trace = _pd_trace_mod.get_current_writer()
+            except Exception:
+                pd_trace = None
+            if pd_trace is not None:
+                fields: dict[str, Any] = {
+                    "n_sched": int(scheduler_output.total_num_scheduled_tokens),
+                    "n_reqs": int(num_reqs),
+                    "n_tokens_unpadded": int(num_tokens_unpadded),
+                    "n_tokens_padded": int(num_tokens_padded),
+                    "cudagraph_mode": str(cudagraph_mode),
+                }
+                if os.environ.get("VLLM_PD_TRACE_REQ_IDS", "0").lower() in (
+                    "1",
+                    "true",
+                    "yes",
+                    "on",
+                ):
+                    fields["req_ids"] = list(scheduler_output.num_scheduled_tokens.keys())
+                    fields["num_scheduled_tokens_by_req"] = {
+                        req_id: int(num_tokens)
+                        for req_id, num_tokens in scheduler_output.num_scheduled_tokens.items()
+                    }
+                pd_trace.event("forward_start", **fields)
+                self._drain_pd_trace_forward_cuda_events(pd_trace)
+            forward_cuda_start_event = None
+            forward_cuda_end_event = None
+            forward_cuda_fields = None
+            forward_cuda_cpu_start_ts = None
+            if pd_trace is not None and self._pd_trace_forward_cuda_events_enabled:
+                try:
+                    forward_cuda_start_event = torch.cuda.Event(enable_timing=True)
+                    forward_cuda_end_event = torch.cuda.Event(enable_timing=True)
+                    forward_cuda_fields = dict(fields)
+                    self._pd_trace_forward_cuda_seq += 1
+                    forward_cuda_cpu_start_ts = time.perf_counter()
+                    forward_cuda_start_event.record()
+                except Exception:
+                    forward_cuda_start_event = None
+                    forward_cuda_end_event = None
+                    forward_cuda_fields = None
+                    forward_cuda_cpu_start_ts = None
+            nsys_capture_this_forward = False
+            if (
+                self._nsys_decode_forward_capture_limit > 0
+                and not self._nsys_decode_forward_capture_done
+            ):
+                kv_transfer_config = self.vllm_config.kv_transfer_config
+                trigger_dp = int(os.environ.get("VLLM_NSYS_CAPTURE_TRIGGER_DP", "0"))
+                is_trigger_dp = (
+                    trigger_dp < 0
+                    or self.parallel_config.data_parallel_rank == trigger_dp
+                )
+                if (
+                    kv_transfer_config is not None
+                    and kv_transfer_config.is_kv_consumer
+                    and is_trigger_dp
+                ):
+                    nsys_capture_this_forward = True
+                    if self._nsys_decode_forward_capture_count == 0:
+                        try:
+                            torch.cuda.profiler.start()
+                            torch.cuda.nvtx.range_push(
+                                "vllm_decode_first_"
+                                f"{self._nsys_decode_forward_capture_limit}_forwards"
+                                f"_dp{self.parallel_config.data_parallel_rank}"
+                            )
+                            self._nsys_decode_forward_capture_active = True
+                        except Exception:
+                            logger.exception("Failed to start Nsight Systems capture")
+                            self._nsys_decode_forward_capture_done = True
+                            nsys_capture_this_forward = False
+                    if nsys_capture_this_forward:
+                        self._nsys_decode_forward_capture_count += 1
+            nsys_forward_nvtx_pushed = False
+            if self._nsys_forward_nvtx_enabled:
+                kv_transfer_config = self.vllm_config.kv_transfer_config
+                if kv_transfer_config is not None:
+                    if kv_transfer_config.is_kv_consumer:
+                        role_label = "decode"
+                    elif kv_transfer_config.is_kv_producer:
+                        role_label = "prefill"
+                    else:
+                        role_label = "kv"
+                else:
+                    role_label = "no_kv"
+                dp_rank = self.parallel_config.data_parallel_rank
+                key = f"{role_label}_dp{dp_rank}"
+                self._nsys_forward_nvtx_counts[key] += 1
+                forward_idx = self._nsys_forward_nvtx_counts[key]
+                try:
+                    torch.cuda.nvtx.range_push(
+                        f"vllm_{role_label}_forward_{forward_idx:04d}"
+                        f"_dp{dp_rank}_reqs{num_reqs}_tokens{num_tokens_unpadded}"
+                    )
+                    nsys_forward_nvtx_pushed = True
+                except Exception:
+                    logger.exception("Failed to push vLLM forward NVTX range")
+            try:
+                model_output = self._model_forward(
+                    input_ids=input_ids,
+                    positions=positions,
+                    intermediate_tensors=intermediate_tensors,
+                    inputs_embeds=inputs_embeds,
+                    **model_kwargs,
+                )
+            finally:
+                if forward_cuda_end_event is not None:
+                    try:
+                        forward_cuda_end_event.record()
+                        self._pd_trace_forward_cuda_pending.append(
+                            {
+                                "seq": self._pd_trace_forward_cuda_seq,
+                                "start_event": forward_cuda_start_event,
+                                "end_event": forward_cuda_end_event,
+                                "cpu_start_ts": forward_cuda_cpu_start_ts,
+                                "cpu_end_ts": time.perf_counter(),
+                                "fields": forward_cuda_fields or {},
+                            }
+                        )
+                        max_pending = max(1, self._pd_trace_forward_cuda_event_delay)
+                        if len(self._pd_trace_forward_cuda_pending) > max_pending:
+                            self._drain_pd_trace_forward_cuda_events(pd_trace)
+                    except Exception:
+                        pass
+                if pd_trace is not None:
+                    pd_trace.event("forward_done")
+                if nsys_forward_nvtx_pushed:
+                    try:
+                        torch.cuda.nvtx.range_pop()
+                    except Exception:
+                        logger.exception("Failed to pop vLLM forward NVTX range")
+                if (
+                    nsys_capture_this_forward
+                    and self._nsys_decode_forward_capture_active
+                    and self._nsys_decode_forward_capture_count
+                    >= self._nsys_decode_forward_capture_limit
+                ):
+                    try:
+                        torch.cuda.nvtx.range_pop()
+                        torch.cuda.profiler.stop()
+                    except Exception:
+                        logger.exception("Failed to stop Nsight Systems capture")
+                    finally:
+                        self._nsys_decode_forward_capture_active = False
+                        self._nsys_decode_forward_capture_done = True
 
         with record_function_or_nullcontext("gpu_model_runner: postprocess"):
             if self.use_aux_hidden_state_outputs:
@@ -4189,6 +4384,22 @@ class GPUModelRunner(
         # Clear ephemeral state.
         self.execute_model_state = None
 
+        pd_trace = None
+        try:
+            from vllm.distributed.kv_transfer.kv_connector.v1.nixl import (
+                _trace as _pd_trace_mod,
+            )
+
+            pd_trace = _pd_trace_mod.get_current_writer()
+        except Exception:
+            pd_trace = None
+        if pd_trace is not None:
+            pd_trace.event(
+                "sample_tokens_start",
+                n_sched=int(scheduler_output.total_num_scheduled_tokens),
+                n_reqs=int(len(self.input_batch.req_ids)),
+            )
+
         # Apply structured output bitmasks if present.
         if grammar_output is not None:
             apply_grammar_bitmask(
@@ -4196,7 +4407,13 @@ class GPUModelRunner(
             )
 
         with record_function_or_nullcontext("gpu_model_runner: sample"):
-            sampler_output = self._sample(logits, spec_decode_metadata)
+            if pd_trace is not None:
+                pd_trace.event("sample_start")
+            try:
+                sampler_output = self._sample(logits, spec_decode_metadata)
+            finally:
+                if pd_trace is not None:
+                    pd_trace.event("sample_done")
 
         self._update_states_after_model_execute(
             sampler_output.sampled_token_ids, scheduler_output
@@ -4308,21 +4525,27 @@ class GPUModelRunner(
                 self._copy_draft_token_ids_to_cpu(scheduler_output, zeros_only=True)
 
         with record_function_or_nullcontext("gpu_model_runner: bookkeep"):
-            (
-                num_nans_in_logits,
-                logprobs_lists,
-                valid_sampled_token_ids,
-                prompt_logprobs_dict,
-                req_ids_output_copy,
-                req_id_to_index_output_copy,
-                invalid_req_indices,
-            ) = self._bookkeeping_sync(
-                scheduler_output,
-                sampler_output,
-                logits,
-                hidden_states,
-                scheduler_output.total_num_scheduled_tokens,
-            )
+            if pd_trace is not None:
+                pd_trace.event("bookkeeping_start")
+            try:
+                (
+                    num_nans_in_logits,
+                    logprobs_lists,
+                    valid_sampled_token_ids,
+                    prompt_logprobs_dict,
+                    req_ids_output_copy,
+                    req_id_to_index_output_copy,
+                    invalid_req_indices,
+                ) = self._bookkeeping_sync(
+                    scheduler_output,
+                    sampler_output,
+                    logits,
+                    hidden_states,
+                    scheduler_output.total_num_scheduled_tokens,
+                )
+            finally:
+                if pd_trace is not None:
+                    pd_trace.event("bookkeeping_done")
 
         if propose_drafts_after_bookkeeping:
             # ngram and other speculative decoding methods use the sampled
@@ -4365,6 +4588,8 @@ class GPUModelRunner(
             )
 
         if not self.use_async_scheduling:
+            if pd_trace is not None:
+                pd_trace.event("sample_tokens_done")
             return output
 
         with record_function_or_nullcontext(
@@ -4388,6 +4613,8 @@ class GPUModelRunner(
                 async_output.async_copy_ready_event,
             )
 
+        if pd_trace is not None:
+            pd_trace.event("sample_tokens_done")
         return async_output
 
     def _pp_broadcast_prev_sampled_token_ids(

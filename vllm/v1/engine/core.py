@@ -18,6 +18,7 @@ from multiprocessing.queues import Queue
 from typing import Any, TypeVar, cast
 
 import msgspec
+import torch
 import zmq
 
 import vllm.envs as envs
@@ -113,6 +114,16 @@ class EngineCore:
             )
 
         self.log_stats = log_stats
+        self._nsys_engine_nvtx_enabled = os.environ.get(
+            "VLLM_NSYS_ENGINE_NVTX", "0"
+        ).lower() in ("1", "true", "yes", "on")
+        self._nsys_engine_step_capture_limit = int(
+            os.environ.get("VLLM_NSYS_CAPTURE_DECODE_ENGINE_STEPS", "0") or "0"
+        )
+        self._nsys_engine_step_count = 0
+        self._nsys_engine_capture_count = 0
+        self._nsys_engine_capture_active = False
+        self._nsys_engine_capture_done = False
 
         # Setup Model.
         self.model_executor = executor_class(vllm_config)
@@ -411,24 +422,82 @@ class EngineCore:
         if not self.scheduler.has_requests():
             return {}, False
         scheduler_output = self.scheduler.schedule()
+        kv_transfer_config = self.vllm_config.kv_transfer_config
+        if kv_transfer_config is not None and kv_transfer_config.is_kv_consumer:
+            role_label = "decode"
+        elif kv_transfer_config is not None and kv_transfer_config.is_kv_producer:
+            role_label = "prefill"
+        else:
+            role_label = "engine"
+        dp_rank = self.vllm_config.parallel_config.data_parallel_rank
+        self._nsys_engine_step_count += 1
+        engine_step_idx = self._nsys_engine_step_count
+        engine_nvtx_pushed = False
+        if self._nsys_engine_nvtx_enabled:
+            try:
+                torch.cuda.nvtx.range_push(
+                    f"vllm_{role_label}_engine_step_{engine_step_idx:04d}"
+                    f"_dp{dp_rank}_tokens{scheduler_output.total_num_scheduled_tokens}"
+                )
+                engine_nvtx_pushed = True
+            except Exception:
+                logger.exception("Failed to push vLLM engine-step NVTX range")
+        nsys_capture_this_step = False
+        if (
+            self._nsys_engine_step_capture_limit > 0
+            and role_label == "decode"
+            and not self._nsys_engine_capture_done
+        ):
+            trigger_dp = int(os.environ.get("VLLM_NSYS_CAPTURE_TRIGGER_DP", "0"))
+            if trigger_dp < 0 or dp_rank == trigger_dp:
+                nsys_capture_this_step = True
+                if self._nsys_engine_capture_count == 0:
+                    try:
+                        torch.cuda.profiler.start()
+                        self._nsys_engine_capture_active = True
+                    except Exception:
+                        logger.exception("Failed to start Nsight Systems engine-step capture")
+                        self._nsys_engine_capture_done = True
+                        nsys_capture_this_step = False
+                if nsys_capture_this_step:
+                    self._nsys_engine_capture_count += 1
         future = self.model_executor.execute_model(scheduler_output, non_block=True)
         grammar_output = self.scheduler.get_grammar_bitmask(scheduler_output)
-        with (
-            self.log_error_detail(scheduler_output),
-            self.log_iteration_details(scheduler_output),
-        ):
-            model_output = future.result()
-            if model_output is None:
-                model_output = self.model_executor.sample_tokens(grammar_output)
+        try:
+            with (
+                self.log_error_detail(scheduler_output),
+                self.log_iteration_details(scheduler_output),
+            ):
+                model_output = future.result()
+                if model_output is None:
+                    model_output = self.model_executor.sample_tokens(grammar_output)
 
-        # Before processing the model output, process any aborts that happened
-        # during the model execution.
-        self._process_aborts_queue()
-        engine_core_outputs = self.scheduler.update_from_output(
-            scheduler_output, model_output
-        )
-
-        return engine_core_outputs, scheduler_output.total_num_scheduled_tokens > 0
+            # Before processing the model output, process any aborts that happened
+            # during the model execution.
+            self._process_aborts_queue()
+            engine_core_outputs = self.scheduler.update_from_output(
+                scheduler_output, model_output
+            )
+            return engine_core_outputs, scheduler_output.total_num_scheduled_tokens > 0
+        finally:
+            if engine_nvtx_pushed:
+                try:
+                    torch.cuda.nvtx.range_pop()
+                except Exception:
+                    logger.exception("Failed to pop vLLM engine-step NVTX range")
+            if (
+                nsys_capture_this_step
+                and self._nsys_engine_capture_active
+                    and self._nsys_engine_capture_count
+                    >= self._nsys_engine_step_capture_limit
+            ):
+                try:
+                    torch.cuda.profiler.stop()
+                except Exception:
+                    logger.exception("Failed to stop Nsight Systems engine-step capture")
+                finally:
+                    self._nsys_engine_capture_active = False
+                    self._nsys_engine_capture_done = True
 
     def post_step(self, model_executed: bool) -> None:
         # When using async scheduling we can't get draft token ids in advance,
@@ -1206,12 +1275,21 @@ class EngineCoreProc(EngineCore):
         """Called only when there are unfinished local requests."""
 
         # Step the engine core.
-        outputs, model_executed = self.step_fn()
+        pd_trace = getattr(self.scheduler, "_pd_trace", None)
+        if pd_trace is not None:
+            pd_trace.event("engine_step_start")
+        try:
+            outputs, model_executed = self.step_fn()
+        finally:
+            if pd_trace is not None:
+                pd_trace.event("engine_step_after_step_fn")
         # Put EngineCoreOutputs into the output queue.
         for output in outputs.items() if outputs else ():
             self.output_queue.put_nowait(output)
         # Post-step hook.
         self.post_step(model_executed)
+        if pd_trace is not None:
+            pd_trace.event("engine_step_done", model_executed=bool(model_executed))
 
         # If no model execution happened but there are waiting requests
         # (e.g., WAITING_FOR_REMOTE_KVS), yield the GIL briefly to allow

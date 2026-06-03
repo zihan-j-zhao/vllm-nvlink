@@ -281,6 +281,10 @@ class NixlConnectorWorker:
         # [req_id -> list[handle]]
         self._recving_metadata: dict[ReqId, ReqMeta] = {}
         self._recving_transfers = defaultdict[ReqId, list[TransferHandle]](list)
+        self._nsys_kv_nvtx_enabled = os.environ.get(
+            "VLLM_NSYS_KV_NVTX", "0"
+        ).lower() in ("1", "true", "yes", "on")
+        self._nsys_recv_range_ids: dict[str, int] = {}
         # Track the expiration time of requests that are waiting to be sent.
         self._reqs_to_send: dict[ReqId, float] = {}
         # Set of requests that have been part of a batch, regardless of status.
@@ -1807,8 +1811,26 @@ class NixlConnectorWorker:
                 try:
                     xfer_state = self.nixl_wrapper.check_xfer_state(handle)
                     if xfer_state == "DONE":
+                        if self._nsys_kv_nvtx_enabled:
+                            range_id = self._nsys_recv_range_ids.pop(str(handle), None)
+                            if range_id is not None:
+                                try:
+                                    torch.cuda.nvtx.range_end(range_id)
+                                except Exception:
+                                    logger.exception("Failed to end NIXL recv NVTX range")
                         # Get telemetry from NIXL
                         res = self.nixl_wrapper.get_xfer_telemetry(handle)
+                        if self._pd_trace is not None:
+                            self._pd_trace.event(
+                                "recv_xfer_telemetry",
+                                req=req_id,
+                                handle=str(handle),
+                                start_time_us=getattr(res, "startTime", None),
+                                xfer_duration_us=getattr(res, "xferDuration", None),
+                                post_duration_us=getattr(res, "postDuration", None),
+                                bytes_transferred=getattr(res, "totalBytes", None),
+                                desc_count=getattr(res, "descCount", None),
+                            )
                         self.xfer_stats.record_transfer(res)
                         self.nixl_wrapper.release_xfer_handle(handle)
                     elif xfer_state == "PROC":
@@ -2130,7 +2152,43 @@ class NixlConnectorWorker:
             )
 
             # Begin async xfer.
+            if self._pd_trace is not None:
+                self._pd_trace.event(
+                    "recv_post_begin",
+                    req=request_id,
+                    handle=str(handle),
+                    remote_engine=dst_engine_id,
+                    remote_rank=remote_rank,
+                    n_blocks=(
+                        sum(len(b) for b in local_block_ids)
+                        if local_block_ids
+                        and isinstance(local_block_ids[0], (list, tuple))
+                        else len(local_block_ids)
+                    ),
+                )
             self.nixl_wrapper.transfer(handle)
+            if self._nsys_kv_nvtx_enabled:
+                try:
+                    self._nsys_recv_range_ids[str(handle)] = torch.cuda.nvtx.range_start(
+                        f"vllm_decode_kv_recv_req_{str(request_id)[:40]}"
+                        f"_rank{remote_rank}"
+                    )
+                except Exception:
+                    logger.exception("Failed to start NIXL recv NVTX range")
+            if self._pd_trace is not None:
+                self._pd_trace.event(
+                    "recv_post_done",
+                    req=request_id,
+                    handle=str(handle),
+                    remote_engine=dst_engine_id,
+                    remote_rank=remote_rank,
+                    n_blocks=(
+                        sum(len(b) for b in local_block_ids)
+                        if local_block_ids
+                        and isinstance(local_block_ids[0], (list, tuple))
+                        else len(local_block_ids)
+                    ),
+                )
 
             # Use handle to check completion in future step().
             self._recving_transfers[request_id].append(handle)

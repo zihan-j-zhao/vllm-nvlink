@@ -1,0 +1,231 @@
+{
+  "config": {
+    "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+    "world_size": 2,
+    "batch_sizes": [
+      1,
+      4,
+      16,
+      64
+    ],
+    "warmup_iters": 5,
+    "iters": 5,
+    "attention_backend": "FLASHINFER",
+    "moe_backend": "triton",
+    "all2all_backend": "allgather_reducescatter",
+    "expert_parallel": true,
+    "enforce_eager": false
+  },
+  "ranks": [
+    {
+      "rank": 0,
+      "rows": [
+        {
+          "num_tokens": 1,
+          "iters": 5,
+          "per_iter_ms": [
+            6.256159782409668,
+            4.991168022155762,
+            4.991072177886963,
+            5.009920120239258,
+            5.002143859863281
+          ],
+          "mean_ms": 5.250092792510986,
+          "p50_ms": 5.002143859863281,
+          "p90_ms": 6.256159782409668,
+          "p99_ms": 6.256159782409668,
+          "min_ms": 4.991072177886963,
+          "max_ms": 6.256159782409668,
+          "rank": 0,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        },
+        {
+          "num_tokens": 4,
+          "iters": 5,
+          "per_iter_ms": [
+            6.166016101837158,
+            5.082079887390137,
+            5.08355188369751,
+            5.095456123352051,
+            5.0978240966796875
+          ],
+          "mean_ms": 5.304985618591308,
+          "p50_ms": 5.095456123352051,
+          "p90_ms": 6.166016101837158,
+          "p99_ms": 6.166016101837158,
+          "min_ms": 5.082079887390137,
+          "max_ms": 6.166016101837158,
+          "rank": 0,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        },
+        {
+          "num_tokens": 16,
+          "iters": 5,
+          "per_iter_ms": [
+            7.215104103088379,
+            5.720416069030762,
+            5.734496116638184,
+            5.716288089752197,
+            5.714111804962158
+          ],
+          "mean_ms": 6.020083236694336,
+          "p50_ms": 5.720416069030762,
+          "p90_ms": 7.215104103088379,
+          "p99_ms": 7.215104103088379,
+          "min_ms": 5.714111804962158,
+          "max_ms": 7.215104103088379,
+          "rank": 0,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        },
+        {
+          "num_tokens": 64,
+          "iters": 5,
+          "per_iter_ms": [
+            8.004416465759277,
+            6.8539838790893555,
+            6.8496317863464355,
+            6.8540802001953125,
+            6.851871967315674
+          ],
+          "mean_ms": 7.082796859741211,
+          "p50_ms": 6.8539838790893555,
+          "p90_ms": 8.004416465759277,
+          "p99_ms": 8.004416465759277,
+          "min_ms": 6.8496317863464355,
+          "max_ms": 8.004416465759277,
+          "rank": 0,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        }
+      ]
+    },
+    {
+      "rank": 1,
+      "rows": [
+        {
+          "num_tokens": 1,
+          "iters": 5,
+          "per_iter_ms": [
+            6.264607906341553,
+            4.990975856781006,
+            4.991168022155762,
+            5.008543968200684,
+            5.002560138702393
+          ],
+          "mean_ms": 5.251571178436279,
+          "p50_ms": 5.002560138702393,
+          "p90_ms": 6.264607906341553,
+          "p99_ms": 6.264607906341553,
+          "min_ms": 4.990975856781006,
+          "max_ms": 6.264607906341553,
+          "rank": 1,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        },
+        {
+          "num_tokens": 4,
+          "iters": 5,
+          "per_iter_ms": [
+            6.150911808013916,
+            5.083040237426758,
+            5.081439971923828,
+            5.095647811889648,
+            5.0977277755737305
+          ],
+          "mean_ms": 5.301753520965576,
+          "p50_ms": 5.095647811889648,
+          "p90_ms": 6.150911808013916,
+          "p99_ms": 6.150911808013916,
+          "min_ms": 5.081439971923828,
+          "max_ms": 6.150911808013916,
+          "rank": 1,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        },
+        {
+          "num_tokens": 16,
+          "iters": 5,
+          "per_iter_ms": [
+            7.213696002960205,
+            5.722047805786133,
+            5.734655857086182,
+            5.716256141662598,
+            5.712384223937988
+          ],
+          "mean_ms": 6.019808006286621,
+          "p50_ms": 5.722047805786133,
+          "p90_ms": 7.213696002960205,
+          "p99_ms": 7.213696002960205,
+          "min_ms": 5.712384223937988,
+          "max_ms": 7.213696002960205,
+          "rank": 1,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        },
+        {
+          "num_tokens": 64,
+          "iters": 5,
+          "per_iter_ms": [
+            8.003392219543457,
+            6.853695869445801,
+            6.84991979598999,
+            6.853695869445801,
+            6.851967811584473
+          ],
+          "mean_ms": 7.082534313201904,
+          "p50_ms": 6.853695869445801,
+          "p90_ms": 8.003392219543457,
+          "p99_ms": 8.003392219543457,
+          "min_ms": 6.84991979598999,
+          "max_ms": 8.003392219543457,
+          "rank": 1,
+          "world_size": 2,
+          "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+          "cudagraph": true,
+          "attention_backend": "FLASHINFER",
+          "moe_backend": "triton",
+          "all2all_backend": "allgather_reducescatter",
+          "expert_parallel": true
+        }
+      ]
+    }
+  ]
+}

@@ -23,6 +23,7 @@
 # limitations under the License.
 """Inference-only Qwen3MoE model compatible with HuggingFace weights."""
 
+import os
 import typing
 from collections.abc import Callable, Iterable
 from itertools import islice
@@ -88,6 +89,25 @@ from .utils import (
 
 logger = init_logger(__name__)
 
+_PD_TRACE_MODEL_PHASES = os.environ.get(
+    "VLLM_PD_TRACE_MODEL_PHASES", "0"
+).lower() in ("1", "true", "yes", "on")
+
+
+def _pd_trace_model_phase(ev: str, **fields: Any) -> None:
+    if not _PD_TRACE_MODEL_PHASES:
+        return
+    try:
+        from vllm.distributed.kv_transfer.kv_connector.v1.nixl import (
+            _trace as _pd_trace_mod,
+        )
+
+        writer = _pd_trace_mod.get_current_writer()
+        if writer is not None:
+            writer.event(ev, **fields)
+    except Exception:
+        pass
+
 
 class Qwen3MoeMLP(nn.Module):
     def __init__(
@@ -145,6 +165,8 @@ class Qwen3MoeSparseMoeBlock(nn.Module):
         config = vllm_config.model_config.hf_text_config
         parallel_config = vllm_config.parallel_config
         quant_config = vllm_config.quant_config
+        self.prefix = prefix
+        self.layer_idx = extract_layer_index(prefix)
 
         self.tp_size = get_tensor_model_parallel_world_size()
 
@@ -234,19 +256,44 @@ class Qwen3MoeSparseMoeBlock(nn.Module):
         if self.is_sequence_parallel:
             hidden_states = sequence_parallel_chunk(hidden_states)
 
-        if self.experts.is_internal_router:
-            # In this case, the gate/router runs inside the FusedMoE class
-            final_hidden_states = self.experts(
-                hidden_states=hidden_states, router_logits=hidden_states
-            )
-        else:
-            # Actually this will be dead code, since we always pass gate into
-            # FusedMoE in the current implementation. But we keep this code
-            # here for clarity and future flexibility.
-            router_logits, _ = self.gate(hidden_states)
-            final_hidden_states = self.experts(
-                hidden_states=hidden_states, router_logits=router_logits
-            )
+        trace_fields = {
+            "layer_idx": self.layer_idx,
+            "prefix": self.prefix,
+            "n_tokens": int(num_tokens),
+            "hidden_size": int(hidden_dim),
+            "ep_rank": int(self.ep_rank),
+            "ep_size": int(self.ep_size),
+            "num_experts": int(self.n_routed_experts),
+        }
+        _pd_trace_model_phase("moe_start", **trace_fields)
+        try:
+            if self.experts.is_internal_router:
+                # In this case, the gate/router runs inside the FusedMoE class
+                _pd_trace_model_phase("moe_experts_start", **trace_fields)
+                try:
+                    final_hidden_states = self.experts(
+                        hidden_states=hidden_states, router_logits=hidden_states
+                    )
+                finally:
+                    _pd_trace_model_phase("moe_experts_done", **trace_fields)
+            else:
+                # Actually this will be dead code, since we always pass gate into
+                # FusedMoE in the current implementation. But we keep this code
+                # here for clarity and future flexibility.
+                _pd_trace_model_phase("moe_router_start", **trace_fields)
+                try:
+                    router_logits, _ = self.gate(hidden_states)
+                finally:
+                    _pd_trace_model_phase("moe_router_done", **trace_fields)
+                _pd_trace_model_phase("moe_experts_start", **trace_fields)
+                try:
+                    final_hidden_states = self.experts(
+                        hidden_states=hidden_states, router_logits=router_logits
+                    )
+                finally:
+                    _pd_trace_model_phase("moe_experts_done", **trace_fields)
+        finally:
+            _pd_trace_model_phase("moe_done", **trace_fields)
 
         if self.is_sequence_parallel:
             final_hidden_states = tensor_model_parallel_all_gather(
@@ -370,6 +417,8 @@ class Qwen3MoeDecoderLayer(nn.Module):
         quant_config = vllm_config.quant_config
 
         self.hidden_size = config.hidden_size
+        self.prefix = prefix
+        self.layer_idx = extract_layer_index(prefix)
         max_position_embeddings = getattr(config, "max_position_embeddings", 8192)
         dual_chunk_attention_config = getattr(
             config, "dual_chunk_attention_config", None
@@ -425,14 +474,32 @@ class Qwen3MoeDecoderLayer(nn.Module):
             hidden_states = self.input_layernorm(hidden_states)
         else:
             hidden_states, residual = self.input_layernorm(hidden_states, residual)
-        hidden_states = self.self_attn(
-            positions=positions,
-            hidden_states=hidden_states,
-        )
+        trace_fields = {
+            "layer_idx": self.layer_idx,
+            "prefix": self.prefix,
+            "n_tokens": int(hidden_states.shape[0]),
+            "hidden_size": int(hidden_states.shape[-1]),
+        }
+        _pd_trace_model_phase("decoder_layer_start", **trace_fields)
+        _pd_trace_model_phase("attention_start", **trace_fields)
+        try:
+            hidden_states = self.self_attn(
+                positions=positions,
+                hidden_states=hidden_states,
+            )
+        finally:
+            _pd_trace_model_phase("attention_done", **trace_fields)
 
         # Fully Connected
         hidden_states, residual = self.post_attention_layernorm(hidden_states, residual)
-        hidden_states = self.mlp(hidden_states)
+        mlp_fields = dict(trace_fields)
+        mlp_fields["is_sparse_moe"] = isinstance(self.mlp, Qwen3MoeSparseMoeBlock)
+        _pd_trace_model_phase("mlp_start", **mlp_fields)
+        try:
+            hidden_states = self.mlp(hidden_states)
+        finally:
+            _pd_trace_model_phase("mlp_done", **mlp_fields)
+        _pd_trace_model_phase("decoder_layer_done", **trace_fields)
         return hidden_states, residual
 
 

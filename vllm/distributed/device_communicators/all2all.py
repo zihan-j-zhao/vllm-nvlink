@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+import os
 import threading
+from datetime import timedelta
 from typing import Any
 
 import torch
@@ -345,6 +347,22 @@ class NixlEPAll2AllManager(All2AllManagerBase):
         super().__init__(cpu_group, tcp_store_group)
 
         self.max_num_ep_ranks = envs.VLLM_NIXL_EP_MAX_NUM_RANKS
+        self._tcp_store = None
+
+    def _get_tcp_store(self):
+        if self.tcp_store_group is not None:
+            return self.tcp_store_group.store
+        if self._tcp_store is None:
+            base_port = int(os.environ.get("VLLM_NIXL_SIDE_CHANNEL_PORT", "5559"))
+            port = int(os.environ.get("VLLM_NIXL_EP_TCP_STORE_PORT", base_port + 1000))
+            self._tcp_store = dist.TCPStore(
+                "127.0.0.1",
+                port,
+                world_size=self.cpu_group.size(),
+                is_master=self.rank == 0,
+                timeout=timedelta(seconds=300),
+            )
+        return self._tcp_store
 
     def _init_buffer(
         self,
@@ -366,7 +384,7 @@ class NixlEPAll2AllManager(All2AllManagerBase):
         )
         buffer = Buffer(
             rank=self.rank,
-            tcp_store_group=self.tcp_store_group.store,
+            tcp_store_group=self._get_tcp_store(),
         )
         buffer.update_memory_buffers(
             num_ranks=self.max_num_ep_ranks,
@@ -382,7 +400,7 @@ class NixlEPAll2AllManager(All2AllManagerBase):
         buffer, current_ep_size = NixlEPAll2AllManager._buffer
         current_ranks = list(range(current_ep_size))
         new_ep_size = self.cpu_group.size()
-        buffer.set_tcp_store_group(self.tcp_store_group.store)
+        buffer.set_tcp_store_group(self._get_tcp_store())
         if new_ep_size > len(current_ranks):
             ranks_to_connect = list(range(len(current_ranks), new_ep_size))
             buffer.connect_ranks(ranks_to_connect)

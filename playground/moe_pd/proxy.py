@@ -68,6 +68,13 @@ async def lifespan(app: FastAPI):
                     max_connections=None, max_keepalive_connections=None
                 ),
             ),
+            "root_client": httpx.AsyncClient(
+                timeout=None,
+                base_url=f"http://{h}:{p}",
+                limits=httpx.Limits(
+                    max_connections=None, max_keepalive_connections=None
+                ),
+            ),
             "host": h,
             "port": p,
         }
@@ -78,6 +85,13 @@ async def lifespan(app: FastAPI):
             "client": httpx.AsyncClient(
                 timeout=None,
                 base_url=f"http://{h}:{p}/v1",
+                limits=httpx.Limits(
+                    max_connections=None, max_keepalive_connections=None
+                ),
+            ),
+            "root_client": httpx.AsyncClient(
+                timeout=None,
+                base_url=f"http://{h}:{p}",
                 limits=httpx.Limits(
                     max_connections=None, max_keepalive_connections=None
                 ),
@@ -97,6 +111,7 @@ async def lifespan(app: FastAPI):
     yield
     for c in app.state.prefill_clients + app.state.decode_clients:
         await c["client"].aclose()
+        await c["root_client"].aclose()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -225,6 +240,55 @@ async def chat_completions(request: Request) -> Response:
 @app.post("/v1/completions")
 async def completions(request: Request) -> Response:
     return await _forward("/completions", request)
+
+
+async def _fanout_profile(path: str) -> JSONResponse:
+    targets = [
+        ("prefill", target)
+        for target in app.state.prefill_clients
+    ] + [
+        ("decode", target)
+        for target in app.state.decode_clients
+    ]
+    results = []
+
+    for role, target in targets:
+        try:
+            upstream = await target["root_client"].post(path)
+            ok = 200 <= upstream.status_code < 300
+            results.append({
+                "role": role,
+                "host": target["host"],
+                "port": target["port"],
+                "ok": ok,
+                "status_code": upstream.status_code,
+                "body": upstream.text[:1000],
+            })
+        except Exception as exc:
+            logger.exception("%s fanout failed for %s", path, role)
+            results.append({
+                "role": role,
+                "host": target["host"],
+                "port": target["port"],
+                "ok": False,
+                "error": str(exc),
+            })
+
+    ok = all(result["ok"] for result in results)
+    return JSONResponse(
+        status_code=200 if ok else 502,
+        content={"ok": ok, "results": results},
+    )
+
+
+@app.post("/start_profile")
+async def start_profile() -> JSONResponse:
+    return await _fanout_profile("/start_profile")
+
+
+@app.post("/stop_profile")
+async def stop_profile() -> JSONResponse:
+    return await _fanout_profile("/stop_profile")
 
 
 @app.get("/v1/models")

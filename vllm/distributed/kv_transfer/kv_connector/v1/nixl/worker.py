@@ -105,6 +105,15 @@ class NixlConnectorWorker:
         self.nixl_backends = vllm_config.kv_transfer_config.get_from_extra_config(
             "backends", ["UCX"]
         )
+        fake_read = vllm_config.kv_transfer_config.get_from_extra_config(
+            "fake_read", False
+        )
+        self.fake_read = str(fake_read).lower() in ("1", "true", "yes", "on")
+        if self.fake_read:
+            logger.warning(
+                "NIXL fake_read is enabled: decode will skip READ transfers "
+                "and mark KV receives complete. Outputs are not meaningful."
+            )
         self._is_hma_required = (
             not vllm_config.scheduler_config.disable_hybrid_kv_cache_manager
             and any(
@@ -290,6 +299,9 @@ class NixlConnectorWorker:
         self._invalid_block_ids: set[int] = set()
         # requests that skipped transfer (handshake or transfer failures)
         self._failed_recv_reqs: set[ReqId] = set()
+        # Requests whose receive was intentionally short-circuited by
+        # fake_read. These are successful zero-byte receives, not failures.
+        self._fake_done_recving: set[ReqId] = set()
 
         # Handshake metadata of this worker for NIXL transfers.
         self.xfer_handshake_metadata: NixlHandshakePayload | None = None
@@ -1676,6 +1688,11 @@ class NixlConnectorWorker:
         done_sending = self._get_new_notifs()
         done_recving = self._pop_done_transfers(self._recving_transfers)
 
+        # Update finished request in fake mode.
+        fake_done_recving = self._fake_done_recving
+        self._fake_done_recving = set()
+        done_recving.update(fake_done_recving)
+
         # add requests that skipped transfer to done_recving
         done_recving.update(self._failed_recv_reqs)
         self._failed_recv_reqs.clear()
@@ -1696,6 +1713,8 @@ class NixlConnectorWorker:
             meta = self._recving_metadata.pop(req_id, None)
             assert meta is not None, f"{req_id} not found in recving_metadata list"
             assert meta.remote is not None
+            if req_id in fake_done_recving:
+                continue
             if self.use_host_buffer:
                 self.sync_recved_kv_to_device(req_id, meta)
 
@@ -2099,6 +2118,43 @@ class NixlConnectorWorker:
             # not per-token data, so trimming would corrupt the transfer.
             if num_local_blocks < num_remote_blocks and not self._is_mamba_group[i]:
                 remote_block_ids[i] = remote_group[-num_local_blocks:]
+
+        n_requested_blocks = (
+            sum(len(b) for b in local_block_ids)
+            if local_block_ids and isinstance(local_block_ids[0], (list, tuple))
+            else len(local_block_ids)
+        )
+
+        if self.fake_read:
+            try:
+                agent_name = self._remote_agents[dst_engine_id][remote_rank]
+                self.nixl_wrapper.send_notif(agent_name, notif_msg=notif_id)
+            except Exception as e:
+                self._log_failure(
+                    failure_type="fake_read_notification_failed",
+                    msg="P worker blocks will be freed after timeout. "
+                    "This may indicate network issues.",
+                    req_id=request_id,
+                    error=e,
+                    dst_engine_id=dst_engine_id,
+                    remote_rank=remote_rank,
+                )
+                self.xfer_stats.record_failed_notification()
+
+            if self._pd_trace is not None:
+                self._pd_trace.recv_start(
+                    req_id=request_id,
+                    dst_engine_id=dst_engine_id,
+                    remote_rank=remote_rank,
+                    n_local_blocks=0,
+                    mode="fake_read",
+                    requested_blocks=n_requested_blocks,
+                    transferred_blocks=0,
+                )
+                self._pd_trace.recv_done(req_id=request_id, mode="fake_read")
+
+            self._fake_done_recving.add(request_id)
+            return
 
         # NOTE (nicolo) With homogeneous TP, each TP worker loads KV from
         # corresponding rank. With heterogeneous TP, fixing D>P, the D tp

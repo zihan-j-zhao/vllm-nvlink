@@ -42,7 +42,16 @@
 #   SERVED_MODEL_NAME  OpenAI model id (default: basename of $MODEL)
 #   GPU_MEM_UTIL       --gpu-memory-utilization per worker (default: 0.85)
 #   LOG_DIR            Output dir      (default: playground/log/moe_pd/<UTC>)
-#   PY                 Python binary   (default: vllm-nvlink conda env python)
+#   NIXL_FAKE_READ     "1"/"0" make decode skip NIXL READs and immediately
+#                      mark receives complete (default: 0; outputs invalid)
+#   VLLM_TORCH_PROFILE "1"/"0" enable vLLM /start_profile endpoints
+#                      (default: 1; recording starts only after /start_profile)
+#   TORCH_PROFILE_DIR  Trace root dir   (default: playground/log/torch_profiling/<UTC>)
+#   TORCH_PROFILE_RECORD_SHAPES "1"/"0" record op input shapes (default: 0)
+#   TORCH_PROFILE_WITH_MEMORY   "1"/"0" record memory stats    (default: 0)
+#   PY                 Python binary   (default: first existing vllm-nvlink
+#                      conda env under $HOME/miniconda3, $HOME/miniforge3,
+#                      then /root/miniconda3)
 
 set -euo pipefail
 
@@ -73,10 +82,19 @@ PREFILL_GPUS="${PREFILL_GPUS:-${PREFILL_GPU:-4,5}}"
 DECODE_GPUS="${DECODE_GPUS:-${DECODE_GPU:-6,7}}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-$(basename "$MODEL")}"
 GPU_MEM_UTIL="${GPU_MEM_UTIL:-0.85}"
+NIXL_FAKE_READ="${NIXL_FAKE_READ:-0}"
 TS="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
 LOG_DIR="${LOG_DIR:-playground/log/moe_pd/$TS}"
 mkdir -p "$LOG_DIR"
 LOG_DIR="$(cd "$LOG_DIR" && pwd)"
+VLLM_TORCH_PROFILE="${VLLM_TORCH_PROFILE:-1}"
+TORCH_PROFILE_DIR="${TORCH_PROFILE_DIR:-playground/log/torch_profiling/$TS}"
+TORCH_PROFILE_RECORD_SHAPES="${TORCH_PROFILE_RECORD_SHAPES:-0}"
+TORCH_PROFILE_WITH_MEMORY="${TORCH_PROFILE_WITH_MEMORY:-0}"
+if [[ "$VLLM_TORCH_PROFILE" == "1" ]]; then
+    mkdir -p "$TORCH_PROFILE_DIR/prefill" "$TORCH_PROFILE_DIR/decode"
+    TORCH_PROFILE_DIR="$(cd "$TORCH_PROFILE_DIR" && pwd)"
+fi
 
 # Derive per-side DP size from the GPU list length. Single GPU per side ->
 # DP=1 (no --data-parallel-size / no --enable-expert-parallel), matching
@@ -133,9 +151,21 @@ else
 fi
 
 # --- Python -----------------------------------------------------------------
+if [[ -z "${PY:-}" ]]; then
+    for candidate in \
+        "$HOME/miniconda3/envs/vllm-nvlink/bin/python" \
+        "$HOME/miniforge3/envs/vllm-nvlink/bin/python" \
+        "/root/miniconda3/envs/vllm-nvlink/bin/python"; do
+        if [[ -x "$candidate" ]]; then
+            PY="$candidate"
+            break
+        fi
+    done
+fi
 PY="${PY:-/root/miniconda3/envs/vllm-nvlink/bin/python}"
 if [[ ! -x "$PY" ]]; then
     echo "error: python not found at $PY" >&2
+    echo "       set PY=/path/to/vllm-nvlink/bin/python" >&2
     exit 1
 fi
 
@@ -170,6 +200,13 @@ echo "[start_server] prefill            = GPUs $PREFILL_GPUS (DP=$PREFILL_DP) ::
 echo "[start_server] decode             = GPUs $DECODE_GPUS (DP=$DECODE_DP) :: http $DECODE_PORT, NIXL side base $DECODE_SIDE_PORT"
 echo "[start_server] proxy              = http $PROXY_PORT"
 echo "[start_server] log dir            = $LOG_DIR"
+if [[ "$VLLM_TORCH_PROFILE" == "1" ]]; then
+    echo "[start_server] torch profile dir  = $TORCH_PROFILE_DIR"
+    echo "[start_server] profile shapes     = $TORCH_PROFILE_RECORD_SHAPES"
+    echo "[start_server] profile memory     = $TORCH_PROFILE_WITH_MEMORY"
+else
+    echo "[start_server] torch profiler     = DISABLED (VLLM_TORCH_PROFILE=0)"
+fi
 echo "[start_server] cuda graphs        = ENABLED (no --enforce-eager)"
 if (( EXPERT_PARALLEL )); then
     echo "[start_server] expert parallel    = ENABLED (--enable-expert-parallel on sides with DP>1)"
@@ -177,6 +214,11 @@ else
     echo "[start_server] expert parallel    = DISABLED"
 fi
 echo "[start_server] kv connector       = NixlConnector"
+if [[ "$NIXL_FAKE_READ" == "1" ]]; then
+    echo "[start_server] nixl fake read     = ENABLED (decode skips READ; outputs invalid)"
+else
+    echo "[start_server] nixl fake read     = DISABLED"
+fi
 echo "[start_server] gpu-memory-util    = $GPU_MEM_UTIL"
 
 PIDS=()
@@ -210,7 +252,11 @@ wait_for_http() {
 }
 
 KV_CONFIG_PRODUCER='{"kv_connector":"NixlConnector","kv_role":"kv_producer"}'
-KV_CONFIG_CONSUMER='{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
+if [[ "$NIXL_FAKE_READ" == "1" ]]; then
+    KV_CONFIG_CONSUMER='{"kv_connector":"NixlConnector","kv_role":"kv_consumer","kv_connector_extra_config":{"fake_read":true}}'
+else
+    KV_CONFIG_CONSUMER='{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
+fi
 
 # vLLM serve args shared by prefill and decode. Same knobs as
 # moe_a2a/start_server_cudagraph.sh, minus the DP/EP flags.
@@ -248,6 +294,35 @@ if (( DECODE_DP > 1 )); then
     fi
 fi
 
+# Enable vLLM's built-in profiler endpoints. The profiler does not record
+# until /start_profile is called, e.g. by `vllm bench serve --profile`.
+prefill_profiler_args=()
+decode_profiler_args=()
+if [[ "$VLLM_TORCH_PROFILE" == "1" ]]; then
+    prefill_profiler_args+=(
+        --profiler-config.profiler=torch
+        --profiler-config.torch_profiler_dir="$TORCH_PROFILE_DIR/prefill"
+        --profiler-config.ignore_frontend=true
+        --profiler-config.wait_iterations=2
+        --profiler-config.warmup_iterations=2
+        --profiler-config.active_iterations=50
+        --profiler-config.torch_profiler_with_stack=false
+        --profiler-config.torch_profiler_record_shapes="$TORCH_PROFILE_RECORD_SHAPES"
+        --profiler-config.torch_profiler_with_memory="$TORCH_PROFILE_WITH_MEMORY"
+    )
+    decode_profiler_args+=(
+        --profiler-config.profiler=torch
+        --profiler-config.torch_profiler_dir="$TORCH_PROFILE_DIR/decode"
+        --profiler-config.ignore_frontend=true
+        --profiler-config.wait_iterations=2
+        --profiler-config.warmup_iterations=2
+        --profiler-config.active_iterations=50
+        --profiler-config.torch_profiler_with_stack=false
+        --profiler-config.torch_profiler_record_shapes="$TORCH_PROFILE_RECORD_SHAPES"
+        --profiler-config.torch_profiler_with_memory="$TORCH_PROFILE_WITH_MEMORY"
+    )
+fi
+
 # --- Prefill instance -------------------------------------------------------
 echo "[start_server] launching prefill server on GPUs $PREFILL_GPUS ..."
 CUDA_VISIBLE_DEVICES="$PREFILL_GPUS" \
@@ -256,6 +331,7 @@ VLLM_NIXL_SIDE_CHANNEL_PORT="$PREFILL_SIDE_PORT" \
 setsid "$PY" -m vllm.entrypoints.openai.api_server \
     "${COMMON_ARGS[@]}" \
     "${prefill_dp_args[@]}" \
+    "${prefill_profiler_args[@]}" \
     --port "$PREFILL_PORT" \
     --kv-transfer-config "$KV_CONFIG_PRODUCER" \
     >"$LOG_DIR/prefill.log" 2>&1 &
@@ -269,6 +345,7 @@ VLLM_NIXL_SIDE_CHANNEL_PORT="$DECODE_SIDE_PORT" \
 setsid "$PY" -m vllm.entrypoints.openai.api_server \
     "${COMMON_ARGS[@]}" \
     "${decode_dp_args[@]}" \
+    "${decode_profiler_args[@]}" \
     --port "$DECODE_PORT" \
     --kv-transfer-config "$KV_CONFIG_CONSUMER" \
     >"$LOG_DIR/decode.log" 2>&1 &

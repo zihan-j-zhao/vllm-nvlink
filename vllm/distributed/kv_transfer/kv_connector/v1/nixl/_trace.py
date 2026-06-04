@@ -88,22 +88,35 @@ class TraceWriter:
 
     def recv_start(self, req_id: str, dst_engine_id: str | None = None,
                    remote_rank: int | None = None,
-                   n_local_blocks: int | None = None) -> None:
-        self._emit({
+                   n_local_blocks: int | None = None,
+                   mode: str | None = None,
+                   requested_blocks: int | None = None,
+                   transferred_blocks: int | None = None) -> None:
+        record = {
             "ev": "recv_start",
             "ts": time.perf_counter(),
             "req": req_id,
             "remote_engine": dst_engine_id,
             "remote_rank": remote_rank,
             "n_blocks": n_local_blocks,
-        })
+        }
+        if mode is not None:
+            record["mode"] = mode
+        if requested_blocks is not None:
+            record["requested_blocks"] = requested_blocks
+        if transferred_blocks is not None:
+            record["transferred_blocks"] = transferred_blocks
+        self._emit(record)
 
-    def recv_done(self, req_id: str) -> None:
-        self._emit({
+    def recv_done(self, req_id: str, mode: str | None = None) -> None:
+        record = {
             "ev": "recv_done",
             "ts": time.perf_counter(),
             "req": req_id,
-        })
+        }
+        if mode is not None:
+            record["mode"] = mode
+        self._emit(record)
 
     def step(self, tokens: list[tuple[str, int]],
              num_scheduled: int | None = None) -> None:

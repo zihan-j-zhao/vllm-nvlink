@@ -177,7 +177,7 @@ class NixlConnectorWorker:
         # initialization with "mlx5dv_devx_alloc_uar" errors.
         # Ref: https://network.nvidia.com/files/doc-2020/ethernet-adapters-programming-manual.pdf#page=63
         num_threads = vllm_config.kv_transfer_config.get_from_extra_config(
-            "num_threads", 4
+            "num_threads", 64
         )
         if nixl_agent_config is None:
             config = None
@@ -2186,7 +2186,22 @@ class NixlConnectorWorker:
             )
 
             # Begin async xfer.
-            self.nixl_wrapper.transfer(handle)
+            nvtx_msg = (
+                f"nixl_transfer_post req={request_id[:48]} "
+                f"dst={dst_engine_id} rank={remote_rank} "
+                f"blocks={n_requested_blocks} "
+                f"descs={len(local_block_descs_ids)}"
+            )
+            torch.cuda.nvtx.range_push(nvtx_msg)
+            try:
+                self.nixl_wrapper.transfer(handle)
+            finally:
+                torch.cuda.nvtx.range_pop()
+
+
+            # while self.nixl_wrapper.check_xfer_state(handle) == "PROC":
+            #     print("blocking for kv transfer")
+            #     pass
 
             # Use handle to check completion in future step().
             self._recving_transfers[request_id].append(handle)

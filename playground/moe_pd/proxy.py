@@ -28,6 +28,17 @@ NIXL handshake (same as the upstream toy):
 Also implements `GET /v1/models` by forwarding to the first prefill so
 AIPerf's `--wait-for-model-mode models` readiness probe works.
 
+Env knobs:
+    MOE_PD_PROXY_ROUTE=round_robin|first
+        round_robin (default): cycle independently across configured prefill and
+            decode instances.
+        first: always use instance 0 for both sides. Useful for small profiling
+            runs where each request should hit the same prefill/decode target.
+    MOE_PD_PREFILL_DP_RANK=<int>
+    MOE_PD_DECODE_DP_RANK=<int>
+        If set, inject vLLM's X-data-parallel-rank header into the corresponding
+        upstream request. This pins routing inside a DP-enabled vLLM server.
+
 CLI: same defaults as the upstream toy
   python proxy.py [--port 8000] [--host 0.0.0.0]
                   [--prefiller-host localhost] [--prefiller-port 8100]
@@ -55,6 +66,17 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
+
+ROUTE_ROUND_ROBIN = "round_robin"
+ROUTE_FIRST = "first"
+ROUTE_MODE = os.environ.get("MOE_PD_PROXY_ROUTE", ROUTE_ROUND_ROBIN)
+if ROUTE_MODE not in {ROUTE_ROUND_ROBIN, ROUTE_FIRST}:
+    raise ValueError(
+        "MOE_PD_PROXY_ROUTE must be one of "
+        f"{ROUTE_ROUND_ROBIN!r}, {ROUTE_FIRST!r}; got {ROUTE_MODE!r}"
+    )
+PREFILL_DP_RANK = os.environ.get("MOE_PD_PREFILL_DP_RANK")
+DECODE_DP_RANK = os.environ.get("MOE_PD_DECODE_DP_RANK")
 
 
 @asynccontextmanager
@@ -104,9 +126,10 @@ async def lifespan(app: FastAPI):
     app.state.prefill_iter = itertools.cycle(range(len(app.state.prefill_clients)))
     app.state.decode_iter = itertools.cycle(range(len(app.state.decode_clients)))
     logger.info(
-        "ready: %d prefill instance(s), %d decode instance(s)",
+        "ready: %d prefill instance(s), %d decode instance(s), route=%s",
         len(app.state.prefill_clients),
         len(app.state.decode_clients),
+        ROUTE_MODE,
     )
     yield
     for c in app.state.prefill_clients + app.state.decode_clients:
@@ -119,14 +142,20 @@ app = FastAPI(lifespan=lifespan)
 
 def _next_client(app: FastAPI, kind: str) -> dict:
     if kind == "prefill":
+        if ROUTE_MODE == ROUTE_FIRST:
+            return app.state.prefill_clients[0]
         return app.state.prefill_clients[next(app.state.prefill_iter)]
     if kind == "decode":
+        if ROUTE_MODE == ROUTE_FIRST:
+            return app.state.decode_clients[0]
         return app.state.decode_clients[next(app.state.decode_iter)]
     raise ValueError(f"unknown client kind {kind!r}")
 
 
-def _auth_headers(request_id: str) -> dict[str, str]:
+def _auth_headers(request_id: str, dp_rank: str | None = None) -> dict[str, str]:
     h = {"X-Request-Id": request_id}
+    if dp_rank is not None:
+        h["X-data-parallel-rank"] = dp_rank
     if "OPENAI_API_KEY" in os.environ:
         h["Authorization"] = f"Bearer {os.environ['OPENAI_API_KEY']}"
     return h
@@ -164,12 +193,13 @@ async def _forward(api: str, request: Request) -> Response:
 
     prefill = _next_client(app, "prefill")
     decode = _next_client(app, "decode")
-    headers = _auth_headers(request_id)
+    prefill_headers = _auth_headers(request_id, PREFILL_DP_RANK)
+    decode_headers = _auth_headers(request_id, DECODE_DP_RANK)
 
     # Step 1: prefill.
     try:
         p_resp = await prefill["client"].post(
-            api, json=_prefill_body(body), headers=headers
+            api, json=_prefill_body(body), headers=prefill_headers
         )
         p_resp.raise_for_status()
     except Exception as exc:
@@ -202,7 +232,7 @@ async def _forward(api: str, request: Request) -> Response:
     # Starlette's StreamingResponse with the matching media_type. The
     # finally clause guarantees the context is closed even if the client
     # disconnects mid-stream.
-    cm = decode["client"].stream("POST", api, json=body, headers=headers)
+    cm = decode["client"].stream("POST", api, json=body, headers=decode_headers)
     try:
         d_resp = await cm.__aenter__()
     except Exception as exc:

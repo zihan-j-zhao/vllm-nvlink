@@ -77,6 +77,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--no-enable-expert-parallel", action="store_true")
     p.add_argument("--enforce-eager", action="store_true")
     p.add_argument("--seed", type=int, default=1)
+    p.add_argument(
+        "--cudagraph-capture-sizes",
+        default=None,
+        help="Comma-separated batch sizes to capture CUDA graphs for. "
+             "Default: vLLM's built-in list (1,2,4,...,512). Use this if you "
+             "need to bench arbitrary B values (e.g. '64,128,256,512,768,1024') "
+             "without falling back to eager. Each value triggers one extra "
+             "capture at LLM init (~0.2-1s per size).",
+    )
 
     # Parallelism. WORLD_SIZE (from torchrun) must equal tp * pp * dp.
     # Common choices on 2-node-of-4 / 4-GPU setups:
@@ -116,6 +125,17 @@ def build_llm(args: argparse.Namespace, world_size: int):
 
     os.environ.setdefault("VLLM_ATTENTION_BACKEND", args.attention_backend)
 
+    # Optionally override which batch sizes vLLM captures CUDA graphs for.
+    # vLLM's default capture list maxes out around 512; anything past that
+    # falls back to eager (3-10x slower for decode). Bench batch size must
+    # be in this list (or pad to one) to stay on the graph fast-path.
+    compilation_config: dict[str, Any] | None = None
+    if args.cudagraph_capture_sizes is not None:
+        sizes = sorted({int(s) for s in args.cudagraph_capture_sizes.split(",") if s.strip()})
+        if not sizes:
+            raise SystemExit("--cudagraph-capture-sizes parsed to empty list")
+        compilation_config = {"cudagraph_capture_sizes": sizes}
+
     return LLM(
         model=args.model,
         tensor_parallel_size=args.tp,
@@ -132,6 +152,7 @@ def build_llm(args: argparse.Namespace, world_size: int):
         disable_log_stats=True,
         moe_backend=args.moe_backend,
         all2all_backend=args.all2all_backend,
+        compilation_config=compilation_config,
     )
 
 

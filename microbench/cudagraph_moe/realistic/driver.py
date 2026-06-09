@@ -29,6 +29,7 @@ from .fake_scheduler import (
     populate_input_batch,
     validate_state,
 )
+from .bg_traffic import BackgroundTraffic
 
 
 def _pct(values: list[float], p: float) -> float:
@@ -243,14 +244,24 @@ class RealisticDecodeDriver:
             self.step()
         torch.cuda.synchronize(self.device)
 
-    def bench(self, iters: int) -> dict[str, Any]:
+    def bench(
+        self, iters: int, bgs: list[BackgroundTraffic] | None = None,
+    ) -> dict[str, Any]:
         # Wrap the timed loop in cudaProfilerStart/Stop + an NVTX range so
         # nsys captures *only* these iters when launched with
         # `--capture-range=cudaProfilerApi`. Outside that flag the calls
         # are cheap no-ops.
+        #
+        # Each ``bgs`` entry runs on its own CPU thread + side CUDA
+        # stream during the timed window. They contend for hardware
+        # (NVLink + CE engines + HBM, depending on direction) without
+        # entering the model's kernel queue.
+        bgs = bgs or []
         starts = [torch.cuda.Event(enable_timing=True) for _ in range(iters)]
         stops = [torch.cuda.Event(enable_timing=True) for _ in range(iters)]
         torch.cuda.synchronize(self.device)
+        for bg in bgs:
+            bg.start()
         torch.cuda.profiler.cudart().cudaProfilerStart()
         torch.cuda.nvtx.range_push(f"realistic_bench iters={iters} B={self.batch_size}")
         try:
@@ -264,8 +275,9 @@ class RealisticDecodeDriver:
             torch.cuda.nvtx.range_pop()
             torch.cuda.synchronize(self.device)
             torch.cuda.profiler.cudart().cudaProfilerStop()
+            bg_stats = [bg.stop() for bg in bgs]
         per_iter_ms = [s.elapsed_time(e) for s, e in zip(starts, stops)]
-        return {
+        result: dict[str, Any] = {
             "iters": iters,
             "per_iter_ms": per_iter_ms,
             "mean_ms": statistics.fmean(per_iter_ms),
@@ -275,6 +287,9 @@ class RealisticDecodeDriver:
             "min_ms": min(per_iter_ms),
             "max_ms": max(per_iter_ms),
         }
+        if bg_stats:
+            result["bg_traffic"] = bg_stats
+        return result
 
 
 # ---------------------------------------------------------------------------

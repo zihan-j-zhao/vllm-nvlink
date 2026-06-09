@@ -21,6 +21,7 @@ import argparse
 import contextlib
 import json
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,7 @@ import torch.distributed as dist
 
 from .driver import RealisticDecodeDriver, prime_captured_graph
 from .fake_scheduler import build_workload, parse_int_dist
+from .bg_traffic import BackgroundTraffic, PATTERN_REGISTRY, make_pattern
 
 
 # ---------------------------------------------------------------------------
@@ -87,6 +89,42 @@ def parse_args() -> argparse.Namespace:
              "capture at LLM init (~0.2-1s per size).",
     )
 
+    # Background traffic. Fixed mapping: rank R receives CE memcpy from
+    # GPU R+4 (decoders 0-3, phantom prefillers 4-7). Only --bg-pattern "off"
+    # vs a registered pattern name needs to change.
+    p.add_argument(
+        "--bg-pattern", default="off",
+        choices=["off", *sorted(PATTERN_REGISTRY)],
+        help="Background CE-traffic pattern between decoder GPU R and "
+             "phantom GPU R+4 (NIXL-style). 'off' = no bg load. Add new "
+             "patterns by registering in bg_traffic.PATTERN_REGISTRY.",
+    )
+    p.add_argument(
+        "--bg-direction", default="ingress",
+        choices=["ingress", "egress", "both"],
+        help="Direction of CE traffic relative to the decoder GPU. "
+             "'ingress' (default, NIXL prefill->decoder push): CE engine "
+             "on phantom GPU, decoder GPU only writes -> barely contends "
+             "with decode forward. 'egress' (decoder->phantom push): CE "
+             "engine on decoder GPU, decoder HBM reads contend with the "
+             "MoE attention's HBM reads -> shifts p50 for memory-bound "
+             "decodes. 'both' runs one of each simultaneously, "
+             "approximating bidirectional KV transfer.",
+    )
+    p.add_argument(
+        "--bg-rate-gbps", type=float, default=50.0,
+        help="Target rate for the 'constant' pattern, in GB/s (default 50).",
+    )
+    p.add_argument(
+        "--bg-chunk-mb", type=int, default=4,
+        help="Chunk size per CE memcpy in MiB (default 4). NIXL-like.",
+    )
+    p.add_argument(
+        "--bg-buffer-mb", type=int, default=64,
+        help="Persistent src/dst buffer size in MiB (default 64). Ops larger "
+             "than this are clamped.",
+    )
+
     # Parallelism. WORLD_SIZE (from torchrun) must equal tp * pp * dp.
     # Common choices on 2-node-of-4 / 4-GPU setups:
     #   --tp 1 --dp N           : pure data-parallel (current default)
@@ -109,12 +147,39 @@ def parse_args() -> argparse.Namespace:
         "--output-json", type=Path,
         default=Path("results/cudagraph_decode_realistic.json"),
     )
+    p.add_argument(
+        "--log-dir", type=Path, default=None,
+        help="If set, redirect each rank's stdout+stderr to "
+             "<log-dir>/rank<R>.log instead of the terminal. The file is "
+             "line-buffered so `tail -f` works during the run.",
+    )
     return p.parse_args()
 
 
 def rank_print(rank: int, msg: str) -> None:
     if rank == 0:
         print(msg, flush=True)
+
+
+def _redirect_to_logfile(log_dir: Path, rank: int) -> None:
+    """Send this process's stdout and stderr to ``<log_dir>/rank<R>.log``.
+
+    Uses os.dup2 on the underlying file descriptors so output from C/CUDA
+    libraries (vLLM, NCCL, CUDA driver) is captured too, not just Python
+    ``print``. Line-buffered so ``tail -f`` shows live progress.
+    """
+    log_dir.mkdir(parents=True, exist_ok=True)
+    path = log_dir / f"rank{rank}.log"
+    fh = open(path, "w", buffering=1)  # line-buffered
+    fd = fh.fileno()
+    os.dup2(fd, sys.stdout.fileno())
+    os.dup2(fd, sys.stderr.fileno())
+    # Re-bind Python's text wrappers so ``print`` flushes correctly.
+    sys.stdout = os.fdopen(sys.stdout.fileno(), "w", buffering=1)
+    sys.stderr = os.fdopen(sys.stderr.fileno(), "w", buffering=1)
+    # Keep the original handle alive; closing it would close the dup'd fd.
+    _redirect_to_logfile._handle = fh  # type: ignore[attr-defined]
+    print(f"[rank {rank}] log redirected to {path}", flush=True)
 
 
 # ---------------------------------------------------------------------------
@@ -171,6 +236,11 @@ def main() -> None:
     rank = int(os.environ.get("RANK", "0"))
     local_rank = int(os.environ.get("LOCAL_RANK", rank))
     world_size = int(os.environ.get("WORLD_SIZE", "1"))
+
+    # Redirect this rank's output *before* importing vLLM so its init
+    # logs land in the file too.
+    if args.log_dir is not None:
+        _redirect_to_logfile(args.log_dir, rank)
 
     # Resolve / sanity-check parallelism config.
     if args.dp is None:
@@ -269,8 +339,36 @@ def main() -> None:
     if dist.is_initialized():
         dist.barrier(device_ids=[device.index])
 
+    # Optional background CE traffic.
+    bgs: list[BackgroundTraffic] = []
+    if args.bg_pattern != "off":
+        directions = (
+            ("ingress", "egress") if args.bg_direction == "both"
+            else (args.bg_direction,)
+        )
+        for direction in directions:
+            # Each bg instance owns its own pacer state. With 'both' we
+            # split the requested rate evenly between directions so the
+            # total wire-time pressure stays comparable.
+            per_dir_rate = (
+                args.bg_rate_gbps / len(directions)
+            ) * 1e9
+            pattern = make_pattern(
+                args.bg_pattern,
+                rate_bytes_per_sec=per_dir_rate,
+                chunk_bytes=args.bg_chunk_mb * 1024 * 1024,
+            )
+            bg = BackgroundTraffic(
+                local_rank=local_rank,
+                pattern=pattern,
+                buffer_bytes=args.bg_buffer_mb * 1024 * 1024,
+                direction=direction,
+            )
+            print(f"[rank {rank}] {bg.describe()}", flush=True)
+            bgs.append(bg)
+
     rank_print(rank, f"[rank {rank}] bench ({args.iters} iters) ...")
-    stats = driver.bench(args.iters)
+    stats = driver.bench(args.iters, bgs=bgs)
     stats.update(
         rank=rank,
         world_size=world_size,

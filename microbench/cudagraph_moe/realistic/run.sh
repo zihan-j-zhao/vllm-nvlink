@@ -15,6 +15,6 @@ set -euo pipefail
 
 # Run from the parent dir so `-m realistic.main` resolves the package.
 cd "$(dirname "$0")/.."
-NPROC="${NPROC:-2}"
+NPROC="${NPROC:-4}"
 
 exec torchrun --standalone --nproc_per_node="${NPROC}" -m realistic.main "$@"

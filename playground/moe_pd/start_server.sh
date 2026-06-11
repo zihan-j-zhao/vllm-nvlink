@@ -270,11 +270,11 @@ wait_for_http() {
     echo "[start_server] $label is up"
 }
 
-KV_CONFIG_PRODUCER='{"kv_connector":"NixlConnector","kv_role":"kv_producer"}'
+KV_CONFIG_PRODUCER='{"kv_connector":"NixlConnector","kv_role":"kv_producer", "kv_connector_extra_config":{"enable_cross_layers_blocks": "True"}}'
 if [[ "$NIXL_FAKE_READ" == "1" ]]; then
     KV_CONFIG_CONSUMER='{"kv_connector":"NixlConnector","kv_role":"kv_consumer","kv_connector_extra_config":{"fake_read":true}}'
 else
-    KV_CONFIG_CONSUMER='{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
+    KV_CONFIG_CONSUMER='{"kv_connector":"NixlConnector","kv_role":"kv_consumer", "kv_connector_extra_config":{"enable_cross_layers_blocks": "True"}}'
 fi
 
 # vLLM serve args shared by prefill and decode. Same knobs as

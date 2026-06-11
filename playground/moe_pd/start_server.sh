@@ -41,6 +41,10 @@
 #   EXPERT_PARALLEL    "1"/"0" override; default "1" iff per-side DP > 1
 #   SERVED_MODEL_NAME  OpenAI model id (default: basename of $MODEL)
 #   GPU_MEM_UTIL       --gpu-memory-utilization per worker (default: 0.85)
+#   MAX_NUM_SEQS       --max-num-seqs: max concurrent running sequences per
+#                      engine (per DP rank). Set explicitly rather than relying
+#                      on the device/context default (1024 on ≥70GiB GPUs via
+#                      the OpenAI server). (default: 2048)
 #   LOG_DIR            Output dir      (default: playground/log/moe_pd/<UTC>)
 #   NIXL_FAKE_READ     "1"/"0" make decode skip NIXL READs and immediately
 #                      mark receives complete (default: 0; outputs invalid)
@@ -84,6 +88,7 @@ PREFILL_GPUS="${PREFILL_GPUS:-${PREFILL_GPU:-4,5}}"
 DECODE_GPUS="${DECODE_GPUS:-${DECODE_GPU:-6,7}}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-$(basename "$MODEL")}"
 GPU_MEM_UTIL="${GPU_MEM_UTIL:-0.85}"
+MAX_NUM_SEQS="${MAX_NUM_SEQS:-2048}"
 NIXL_FAKE_READ="${NIXL_FAKE_READ:-0}"
 TS="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
 LOG_DIR="${LOG_DIR:-playground/log/moe_pd/$TS}"
@@ -239,6 +244,7 @@ else
     echo "[start_server] nixl fake read     = DISABLED"
 fi
 echo "[start_server] gpu-memory-util    = $GPU_MEM_UTIL"
+echo "[start_server] max-num-seqs       = $MAX_NUM_SEQS (per DP rank)"
 
 PIDS=()
 
@@ -292,6 +298,7 @@ COMMON_ARGS=(
     --attention-backend FLASHINFER
     --attention-config.use_trtllm_attention=False
     --max-num-batched-tokens 2048
+    --max-num-seqs "$MAX_NUM_SEQS"
     --gpu-memory-utilization "$GPU_MEM_UTIL"
     --trust-remote-code
 )
